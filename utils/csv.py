@@ -7,16 +7,19 @@
 # mas sim, uma virgula usual, como a de gramática
 # é preciso se atentar a isso porque o esquema de ler os csv é justamente dar o split em virgulas
 
-def carregarCSV(qual):
+from datetime import datetime
+
+def carregarCSV(qual, ehLista = False):
     data = {}
     dataL = []
     chaves = []
-    chavePrincipal = ''
     estaLendoChaves = True # na primeira linha, tem as chaves do dicionario, essa variavel serve pra dizer que ta lendo as chaves, e depois que lê, fica falsa, e daí se le os valores!
 
 
     with open(qual, 'r', encoding='UTF-8') as csv:
         csv = csv.read()
+        if csv[-1] == '\n': # se tiver a merda de uma quebra de linha sobrando no csv, essa função quebra e faz tudo se tornar uma lista vazia...
+            csv = csv[0:-1]
         for linha in csv.split('\n'):
             dados = linha.split(',')
             if estaLendoChaves:
@@ -32,28 +35,58 @@ def carregarCSV(qual):
                         # o primeiro indice é o nome do serviço, ele quem vai ser usado pra resgatar os outros dados (senha, categoria)
 
                         # já os outros indices equivalem cada um a suas chaves, isso sao justamente as colunas do csv. por isso o [chaves[i]]
-                        if i == 0:
-                            data[dados[0]] = {} # inicializar a tal chave pai
-                            continue
-                        data[dados[0]][chaves[i]] = dados[i]
+                        if ehLista:
+                            print('é lista!')
+                            if i == 0:
+                                dataL.append({}) # inicializar um novo dicionario pra guardar o dados dessa linha, ja que nesse caso, é disposto por dicionarios em uma lista
+                            dataL[-1][chaves[i]] = dados[i]
+                            data = dataL
+                        else:
+                            if i == 0:
+                                data[dados[0]] = {} # inicializar a tal chave pai
+                                continue
+                            data[dados[0]][chaves[i]] = dados[i]
+    if ehLista:
+        data = dataL
     return data
 
 
 
-def salvarCSV(onde,dicionario: dict,chavePai): # essa função se baseia muito na expectativa de que o usuario vai escrever todos os dicionarios estritamente iguais e na ordem correta por causa da chave, se nao houver nenhuma modificação por fora, o cofreseguro consegue essa expectativa
+def salvarCSV(onde,data: dict,chavePai=None): # essa função se baseia muito na expectativa de que o usuario vai escrever todos os dicionarios estritamente iguais e na ordem correta por causa da chave, se nao houver nenhuma modificação por fora, o cofreseguro consegue essa expectativa
     chaves = []
     with open(onde, 'w', encoding='UTF-8') as csv:
-        csv.write(chavePai)
-        for chave in list(dicionario.values())[0].keys(): # pegar um dicionario de exemplo pra que ele monte o cabeçalho de colunas, por exemplo: servico,credencial,senha,classe,registro,obs
-            csv.write(f",{chave}")
-            chaves.append(chave)
 
-        csv.write('\n') 
-        for valorPrin, dados in dicionario.items(): # agora sim guardar os dados
-            csv.write(valorPrin) # escrever o valor que no dicionario é a chave pai, no exemplo do login, o nome do serviço é quem se refere ao dicionario de dados, por isso ele fica separado da variavel dados
-            for chave in chaves:
-                csv.write(','+dados[chave])
-            csv.write('\n')
+        if type(data) == dict:
+            csv.write(chavePai)
+            for chave in list(data.values())[0].keys(): # pegar um dicionario de exemplo pra que ele monte o cabeçalho de colunas, por exemplo: servico,credencial,senha,classe,registro,obs
+                csv.write(f",{chave}")
+                chaves.append(chave)
+
+            csv.write('\n') 
+            for valorPrin, dados in data.items(): # agora sim guardar os dados
+                csv.write(valorPrin) # escrever o valor que no dicionario é a chave pai, no exemplo do login, o nome do serviço é quem se refere ao dicionario de dados, por isso ele fica separado da variavel dados
+                for chave in chaves:
+                    csv.write(','+dados[chave])
+                csv.write('\n')
+
+        elif type(data) == list: # no caso do log, nao precisamos de uma chave pai, já que o registro são varios dicionarios em uma lista só, sem uma chave principal para referencia-los
+
+            for chave in data[0].keys(): # matheuzinho, espero que tu entenda o resto e comente pra mim !!
+                chaves.append(chave)
+                
+                if chave == list(data[0].keys())[0]:
+                    csv.write(f"{chave}")    
+                    continue
+                csv.write(f",{chave}")
+
+            csv.write('\n') 
+            for dados in data:
+                for chave in chaves:
+                    if chave == chaves[0]:
+                        csv.write(dados[chave])
+                        continue
+                    csv.write(','+dados[chave])
+                csv.write('\n')
 
 
 
@@ -67,6 +100,18 @@ def salvarCSV(onde,dicionario: dict,chavePai): # essa função se baseia muito n
 # alterar,30-10-2026 13:13,senha do banco tal foi alterada
 # consulta, 30-10-2026 13:14, senha do jogo tal foi revelada
 
-def registrarLog(operacao,mudancas):
-    # fica pra amanha baby
-    pass
+def registrarLog(onde, log:list, operacao,oqueMudou):
+    #tabela:
+    # operacao,quando,alteracoes
+
+    # montar a frasezinha: tal coisa foi alterada, por exemplo: (ADICIONAR) A senha do serviço Reddit foi adicionada.'
+    alteracoes = f"({operacao.upper()}) A senha do serviço {oqueMudou} foi {operacao[0:len(operacao)-1]}da."
+
+    log.append({
+        'operacao': operacao,
+        'quando': datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+        'alteracoes': alteracoes
+    })
+    salvarCSV(onde, log)
+    print(f'\n\033[3m\033[90mAtualização no Registro de Auditoria: {alteracoes}\033[0m')
+    return log
