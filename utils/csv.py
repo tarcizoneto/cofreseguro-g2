@@ -18,34 +18,34 @@ def carregarCSV(qual, ehLista = False):
 
     with open(qual, 'r', encoding='UTF-8') as csv:
         csv = csv.read()
-        if csv[-1] == '\n': # se tiver a merda de uma quebra de linha sobrando no csv, essa função quebra e faz tudo se tornar uma lista vazia...
-            csv = csv[0:-1]
-        for linha in csv.split('\n'):
-            dados = linha.split(',')
-            if estaLendoChaves:
-                chaves = dados
-                estaLendoChaves = False
-            else:
-                if len(dados) == 1: # quando só tem uma coluna, isso é uma lista apenas, e nao um dicionario
-                    dataL.append(dados)
-                    data = dataL
+        if len(csv) != 0:
+            if csv[-1] == '\n': # se tiver a merda de uma quebra de linha sobrando no csv, essa função quebra e faz tudo se tornar uma lista vazia...
+                csv = csv[0:-1]
+            for linha in csv.split('\n'):
+                dados = linha.split(',')
+                if estaLendoChaves:
+                    chaves = dados
+                    estaLendoChaves = False
                 else:
-                    for i in range(len(dados)):
-                        # [dados[0]]?? = o primeiro indice de qualquer linha guarda a chave pai do dicionario de valores, no caso do cofre:
-                        # o primeiro indice é o nome do serviço, ele quem vai ser usado pra resgatar os outros dados (senha, categoria)
+                    if len(dados) == 1: # quando só tem uma coluna, isso é uma lista apenas, e nao um dicionario
+                        dataL.append(dados)
+                        data = dataL
+                    else:
+                        for i in range(len(dados)):
+                            # [dados[0]]?? = o primeiro indice de qualquer linha guarda a chave pai do dicionario de valores, no caso do cofre:
+                            # o primeiro indice é o nome do serviço, ele quem vai ser usado pra resgatar os outros dados (senha, categoria)
 
-                        # já os outros indices equivalem cada um a suas chaves, isso sao justamente as colunas do csv. por isso o [chaves[i]]
-                        if ehLista:
-                            print('é lista!')
-                            if i == 0:
-                                dataL.append({}) # inicializar um novo dicionario pra guardar o dados dessa linha, ja que nesse caso, é disposto por dicionarios em uma lista
-                            dataL[-1][chaves[i]] = dados[i]
-                            data = dataL
-                        else:
-                            if i == 0:
-                                data[dados[0]] = {} # inicializar a tal chave pai
-                                continue
-                            data[dados[0]][chaves[i]] = dados[i]
+                            # já os outros indices equivalem cada um a suas chaves, isso sao justamente as colunas do csv. por isso o [chaves[i]]
+                            if ehLista:
+                                print('é lista!')
+                                if i == 0:
+                                    dataL.append({}) # inicializar um novo dicionario pra guardar o dados dessa linha, ja que nesse caso, é disposto por dicionarios em uma lista
+                                dataL[-1][chaves[i]] = dados[i]
+                            else:
+                                if i == 0:
+                                    data[dados[0]] = {} # inicializar a tal chave pai
+                                    continue
+                                data[dados[0]][chaves[i]] = dados[i]
     if ehLista:
         data = dataL
     return data
@@ -54,6 +54,11 @@ def carregarCSV(qual, ehLista = False):
 
 def salvarCSV(onde,data: dict,chavePai=None): # essa função se baseia muito na expectativa de que o usuario vai escrever todos os dicionarios estritamente iguais e na ordem correta por causa da chave, se nao houver nenhuma modificação por fora, o cofreseguro consegue essa expectativa
     chaves = []
+    if len(data) == 0: # se nn tem nada no dicionario pra salvar, entao  nao salva nada ne
+        with open(onde, 'w', encoding='UTF-8') as csv:
+            csv.write('')
+        return
+    
     with open(onde, 'w', encoding='UTF-8') as csv:
 
         if type(data) == dict:
@@ -101,13 +106,13 @@ def salvarCSV(onde,data: dict,chavePai=None): # essa função se baseia muito na
 # consulta, 30-10-2026 13:14, senha do jogo tal foi revelada
 
 def registrarLog(onde, log:list, operacao,oqueMudou):
-    #tabela:
+    # tabela:
     # operacao,quando,alteracoes
 
     # montar a frasezinha: tal coisa foi alterada, por exemplo: (ADICIONAR) A senha do serviço Reddit foi adicionada.'
     alteracoes = f"({operacao.upper()}) A senha do serviço {oqueMudou} foi {operacao[0:len(operacao)-1]}da."
-
-    log.append({
+    
+    log.insert(0, {
         'operacao': operacao,
         'quando': datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
         'alteracoes': alteracoes

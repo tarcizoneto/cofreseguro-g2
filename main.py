@@ -34,9 +34,27 @@ cofre = {}
 senhasC = []
 log = []
 
-def printarLog(log):
-    for registro in log:
-        pass
+def printarLog(log, operacao=None):
+
+    existemRegistros = False # essa variavel serve pra quando nao vai printar nenhum registro, é uma forma de verificação, quando chega depois do for, se a variavel continuar falsa, é porque não se printou registro nenhum
+    if operacao is None:
+        for registro in log:
+            print(f"[{registro['quando']}] {registro['alteracoes']}")
+            existemRegistros = True # pra dizer que se printou registros
+        if not existemRegistros:
+            print("O registro de auditoria está vazio.")
+    else:
+        for registro in log:
+            if registro['operacao'] == operacao:
+                print(f"[{registro['quando']}] {registro['alteracoes']}")
+                existemRegistros = True
+        if not existemRegistros:
+            print("O registro de auditoria dessa categoria está vazio.")
+
+
+
+
+
 
 def manipularSenha(acao, senha): # separei em função os atos de visualizar e criar, ja que em tempos futuros iremos fazer alguma criptografia
     match acao:
@@ -44,6 +62,15 @@ def manipularSenha(acao, senha): # separei em função os atos de visualizar e c
             return senha # aqui vai ter o babado todo de criptografar
         case 'visualizar':
             return senha # e aqui vai ter o babado todo de descriptografar
+        case 'previa':
+            previaSenha = ''
+            for idxLetra in range(len(senha)):
+                if idxLetra <= 1:
+                    previaSenha += senha[idxLetra]
+                else:
+                    previaSenha += '*'
+            return previaSenha
+                
         case _:
             raise ValueError(f'Mal uso da função de manipulação de senhas, {acao} não é uma ação válida')
 
@@ -83,13 +110,13 @@ def main():
                     print(f"{CORES['ITALICO']}Você está no menu de {CORES['NEGRITO']}senhas.{CORES['RESET']}")
 
 
-                    print(f'\n\n{CORES["NEGRITO"]}Opções:{CORES["RESET"]} \n1. Adicionar senha\n2. Consultar senha\n3. Modificar senha\n4. Apagar senha\n5. Listar senhas\n6. Listar senhas por categoria\n0. Sair')
+                    print(f'\n\n{CORES["NEGRITO"]}Opções:{CORES["RESET"]} \n1. Adicionar senha\n2. Consultar senha\n3. Alterar senha\n4. Apagar senha\n5. Listar senhas\n6. Listar senhas por categoria\n0. Sair')
                     operacao = input('Digite o número da operação: ')
                     os.system('cls')
                     match operacao:
                         case '1':
                             print(f'{CORES["ITALICO"]}Você está adicionando uma senha, deixe o nome do serviço em branco para sair... {CORES["RESET"]}\n')
-                            servico = input('Digite o serviço no qual essa senha está sendo usada: ')
+                            servico = input('Digite o nome de serviço no qual essa senha está sendo usada: ')
                             if servico == '':
                                 continue
                             elif servico in cofre:
@@ -115,10 +142,10 @@ def main():
                             csv.salvarCSV(DIRETORIOS["cofre"], cofre, 'servico')
                             log = csv.registrarLog(DIRETORIOS['log'], log, 'adicionar', servico)
 
-                            input(f"\n\n{CORES['VERDE']}Senha do serviço {CORES['NEGRITO']}{servico} adicionada com sucesso!{CORES['RESET']}\nPressione alguma tecla para continuar...")
+                            input(f"\n\n{CORES['VERDE']}Senha do serviço {CORES['NEGRITO']}{servico}{CORES['RESET']} {CORES['VERDE']}adicionada com sucesso!{CORES['RESET']}\nPressione alguma tecla para continuar...")
                         case '2':
                             print(f'{CORES["ITALICO"]}Você está consultando uma senha, deixe o nome do serviço em branco para sair... {CORES["RESET"]}\n')
-                            servico = input('Digite o serviço da senha que você deseja consultar: ')
+                            servico = input('Digite o nome do serviço da senha que você deseja consultar: ')
                             if servico == '':
                                 continue
 
@@ -130,8 +157,51 @@ def main():
                                 print(f"\nEsse serviço {CORES['NEGRITO']}não está no cofre{CORES['RESET']}, verifique se você o digitou certo ou se ainda não adicionou-o.")
 
                             input('Pressione alguma tecla para continuar...')
+                        case '3':
+                            print(f'{CORES["ITALICO"]}Você está alterando uma senha, deixe o nome do serviço em branco para sair... {CORES["RESET"]}\n')
+                            servico = input('Digite o nome do serviço da senha que você deseja alterar: ')
+                            if servico == '':
+                                continue
+
+                            if servico in cofre:
+                                
+                                novaSenha = input("Digite a nova senha: ")
+
+                                cofre[servico]['senha'] = manipularSenha('registrar', novaSenha)
+                                cofre[servico]['horario'] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+                                log = csv.registrarLog(DIRETORIOS['log'], log, 'alterar', servico)
+                                print(f"\n{CORES['VERDE']}A senha do serviço \"{servico}\" foi {CORES['NEGRITO']}alterada!{CORES['RESET']}")
+
+                                csv.salvarCSV(DIRETORIOS["cofre"], cofre, 'servico')
+                            else:
+                                print(f"\nEsse serviço {CORES['NEGRITO']}não está no cofre{CORES['RESET']}, verifique se você o digitou certo ou se ainda não adicionou-o.")
+
+                            input('Pressione alguma tecla para continuar...')
+                        case '4':
+                            print(f'{CORES["ITALICO"]}Você está apagando uma senha, deixe o nome do serviço em branco para sair... {CORES["RESET"]}\n')
+                            servico = input('Digite o nome do serviço da senha que você deseja apagar: ')
+                            if servico == '':
+                                continue
+
+                            if servico in cofre:
+                                
+                                cofre.pop(servico)
+                                log = csv.registrarLog(DIRETORIOS['log'], log, 'apagar', servico)
+                                print(f"\n{CORES['VERDE']}A senha do serviço \"{servico}\" foi {CORES['NEGRITO']}apagada!{CORES['RESET']}")
+
+                                csv.salvarCSV(DIRETORIOS["cofre"], cofre, 'servico')
+                            else:
+                                print(f"\nEsse serviço {CORES['NEGRITO']}não está no cofre{CORES['RESET']}, verifique se você o digitou certo ou se ainda não adicionou-o.")
+
+                            input('Pressione alguma tecla para continuar...')
                         case '5':
-                            print(cofre) # só pra testar por enquanto, mas tem que printar direitinho
+                            if len(cofre) > 0:
+                                print("Senhas salvas no CofreSeguro: ")
+                                print(f"\n{CORES['NEGRITO']}{'Serviço':>16} {'Credencial':>24} {'Senha':>20} {'Categoria':>16} {'Observação':>64} {CORES['RESET']}")
+                                for servico, dados in cofre.items():
+                                    print(f"{servico:>16} {dados['credencial']:>24} {manipularSenha('previa', dados['senha']):>20} {dados['classe']:>16} {dados['obs']:>64}")
+                            else:
+                                print("Não há senhas no cofre!")
                             input('\nPressione alguma tecla para continuar...')
                         case '0':
                             break
@@ -164,8 +234,14 @@ def main():
                     os.system('cls')
                     match operacao:
                         case '1':
-                            print(log) # só pra testar por enquanto, mas tem que printar direitinho
-                            input('\nPressione alguma tecla para continuar...')
+                            print(f'Todos os registros: {CORES["CINZA"]}')
+                            printarLog(log)
+                            input(f'{CORES["RESET"]}\nPressione alguma tecla para continuar...')
+                        case '2':
+                            operacaoLog = input("Digite a operação para pesquisar nos registros (adicionar/consultar/alterar/apagar): ")
+                            print(f'Registros da operação {operacaoLog}: {CORES["CINZA"]}')
+                            printarLog(log, operacaoLog)
+                            input(f'{CORES["RESET"]}\nPressione alguma tecla para continuar...')
                         case '0':
                             break
                         case _:
@@ -179,7 +255,7 @@ def main():
 
 
 if __name__ == "__main__":
-    # Início do programa
+    # iniciar o programa
     main()
     
     
