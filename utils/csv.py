@@ -28,7 +28,7 @@ def carregarCSV(qual, ehLista = False):
                     estaLendoChaves = False
                 else:
                     if len(dados) == 1: # quando só tem uma coluna, isso é uma lista apenas, e nao um dicionario
-                        dataL.append(dados)
+                        dataL.append(dados[0])
                         data = dataL
                     else:
                         for i in range(len(dados)):
@@ -37,7 +37,6 @@ def carregarCSV(qual, ehLista = False):
 
                             # já os outros indices equivalem cada um a suas chaves, isso sao justamente as colunas do csv. por isso o [chaves[i]]
                             if ehLista:
-                                print('é lista!')
                                 if i == 0:
                                     dataL.append({}) # inicializar um novo dicionario pra guardar o dados dessa linha, ja que nesse caso, é disposto por dicionarios em uma lista
                                 dataL[-1][chaves[i]] = dados[i]
@@ -75,23 +74,30 @@ def salvarCSV(onde,data: dict,chavePai=None): # essa função se baseia muito na
                 csv.write('\n')
 
         elif type(data) == list: # no caso do log, nao precisamos de uma chave pai, já que o registro são varios dicionarios em uma lista só, sem uma chave principal para referencia-los
+            if chavePai is not None: # quando a data a ser salva é uma lista, e tem uma chave pai, é porque a data é uma lista de strings, por exemplo, a lista de categorias (categorias = ['Jogos', 'Diversão']), não há nenhuma chave além do nome da variável em si
+                csv.write(chavePai)
+                csv.write('\n') 
+                for dado in data:
+                    csv.write(dado)
+                    csv.write('\n')
+            else:
 
-            for chave in data[0].keys(): # matheuzinho, espero que tu entenda o resto e comente pra mim !!
-                chaves.append(chave)
-                
-                if chave == list(data[0].keys())[0]:
-                    csv.write(f"{chave}")    
-                    continue
-                csv.write(f",{chave}")
-
-            csv.write('\n') 
-            for dados in data:
-                for chave in chaves:
-                    if chave == chaves[0]:
-                        csv.write(dados[chave])
+                for chave in data[0].keys(): # matheuzinho, espero que tu entenda o resto e comente pra mim !!
+                    chaves.append(chave)
+                    
+                    if chave == list(data[0].keys())[0]:
+                        csv.write(f"{chave}")    
                         continue
-                    csv.write(','+dados[chave])
-                csv.write('\n')
+                    csv.write(f",{chave}")
+
+                csv.write('\n') 
+                for dados in data:
+                    for chave in chaves:
+                        if chave == chaves[0]:
+                            csv.write(dados[chave])
+                            continue
+                        csv.write(','+dados[chave])
+                    csv.write('\n')
 
 
 

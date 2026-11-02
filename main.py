@@ -26,13 +26,15 @@ CORES = {
 DIRETORIOS = {
     'cofre': 'dados/cofre.csv',
     'senhasCom': 'dados/senhasComuns.csv',
-    'log': 'dados/log.csv'
+    'log': 'dados/log.csv',
+    'categorias': 'dados/categorias.csv'
 }
 
 
 cofre = {}
 senhasC = []
 log = []
+categorias = []
 
 def printarLog(log, operacao=None):
 
@@ -52,7 +54,12 @@ def printarLog(log, operacao=None):
             print("O registro de auditoria dessa categoria está vazio.")
 
 
-
+def printarCategorias(categorias):
+    if len(categorias) != 0:
+        for i in range(len(categorias)):
+            print(f"{i+1}. {categorias[i]}")
+    else:
+        print(f"{CORES["VERMELHO"]}Não há categorias registradas!{CORES["RESET"]}")
 
 
 
@@ -75,44 +82,52 @@ def manipularSenha(acao, senha): # separei em função os atos de visualizar e c
             raise ValueError(f'Mal uso da função de manipulação de senhas, {acao} não é uma ação válida')
 
 
+def acharCategorias(cofre):
+    categorias = []
+    for servico in cofre.values():
+        if servico['categoria'] not in categorias:
+            if 'categoria' in servico:
+                categorias.append(servico['categoria'])
+    return categorias
 
 
 
 
 def preparar(): 
-    os.system("color && mode con cols=30 lines=30 && cls")
+    os.system("color && mode con cols=30 lines=30 && clear")
 
     # carregar arquivos necessários
-    global cofre, senhasC, log
+    global cofre, senhasC, log, categorias
     
     cofre = csv.carregarCSV(DIRETORIOS["cofre"])
     senhasC = csv.carregarCSV(DIRETORIOS["senhasCom"])
     log = csv.carregarCSV(DIRETORIOS["log"], ehLista=True)
+    categorias = csv.carregarCSV(DIRETORIOS["categorias"])
 
 def main():
     preparar()
-    global cofre, senhasC, log
+    global cofre, senhasC, log, categorias
 
     while True:
-        os.system('cls')
+        os.system('clear')
         print(f"{CORES['VERDE']}=== CofreSeguro ==={CORES['RESET']}")
 
-        print(f'\n\n{CORES["NEGRITO"]}Menus:{CORES["RESET"]} \n1. Senhas\n2. Categorias\n3. Registro de Auditoria\n0. Sair')
+        print(f'\n\n{CORES["NEGRITO"]}Menus:{CORES["RESET"]} \n1. Senhas\n2. categorias\n3. Registro de Auditoria\n0. Sair')
         menu = input("Digite o número do menu: ")
-        os.system('cls')
+        os.system('clear')
         match menu:
 
             # menu de senhas
             case '1':
                 while True:
-                    os.system('cls')
+                    os.system('clear')
                     print(f"{CORES['VERDE']}=== CofreSeguro ==={CORES['RESET']}")
                     print(f"{CORES['ITALICO']}Você está no menu de {CORES['NEGRITO']}senhas.{CORES['RESET']}")
 
 
                     print(f'\n\n{CORES["NEGRITO"]}Opções:{CORES["RESET"]} \n1. Adicionar senha\n2. Consultar senha\n3. Alterar senha\n4. Apagar senha\n5. Listar senhas\n6. Listar senhas por categoria\n0. Sair')
                     operacao = input('Digite o número da operação: ')
-                    os.system('cls')
+                    os.system('clear')
                     match operacao:
                         case '1':
                             print(f'{CORES["ITALICO"]}Você está adicionando uma senha, deixe o nome do serviço em branco para sair... {CORES["RESET"]}\n')
@@ -120,11 +135,18 @@ def main():
                             if servico == '':
                                 continue
                             elif servico in cofre:
-                                input(f"\n\nEsse serviço {CORES['NEGRITO']}já tem uma senha cadastrada!{CORES['RESET']}\nPressione alguma tecla para continuar...")
+                                input(f"\n\nEsse serviço {CORES['NEGRITO']}já tem uma senha cadastrada!{CORES['RESET']}\nPressione Enter para continuar...")
                                 continue
                             cred = input("Digite a credencial (usuário, e-mail ou login) dessa senha: ")
                             senha = input("Digite a senha: ") # todo: alguma forma de criptografia
-                            classe = input("Digite a categoria dessa credencial: ") # matheuzinho, saiba que depois a gente vai colocar pra ter como criar categorias e referencialas por indice e msotrar todas elas e tudo mais...
+                            print(f"\nCategorias disponíveis:{CORES["CINZA"]}")
+                            printarCategorias(categorias)
+                            while True:
+                                categoria = int(input(f"{CORES["RESET"]}Digite a categoria desejada com base na lista acima (de 1 a {len(categorias)}): ")) - 1
+                                if categoria < 0 or categoria > (len(categorias) - 1):
+                                    print(f"{COLOR["VERMELHO"]}Categoria inválida, digite um número de 1 a {len(categorias)}.{COLOR["RESET"]}")
+                                else:
+                                    break
                             observacao = input(f"Digite uma observação para essa senha {CORES['ITALICO']}(ou deixe em branco, caso não queira){CORES['RESET']}: ")
                             horario = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
                             if observacao == '': # se nao tiver nada a ser observado
@@ -132,7 +154,7 @@ def main():
                             cofre[servico] = {
                                     'credencial': cred,
                                     'senha': manipularSenha('registrar', senha),
-                                    'classe': classe,
+                                    'categoria': categorias[categoria],
                                     'registro': horario,
                                     'obs': observacao
                                 }
@@ -142,7 +164,7 @@ def main():
                             csv.salvarCSV(DIRETORIOS["cofre"], cofre, 'servico')
                             log = csv.registrarLog(DIRETORIOS['log'], log, 'adicionar', servico)
 
-                            input(f"\n\n{CORES['VERDE']}Senha do serviço {CORES['NEGRITO']}{servico}{CORES['RESET']} {CORES['VERDE']}adicionada com sucesso!{CORES['RESET']}\nPressione alguma tecla para continuar...")
+                            input(f"\n\n{CORES['VERDE']}Senha do serviço {CORES['NEGRITO']}{servico}{CORES['RESET']} {CORES['VERDE']}adicionada com sucesso!{CORES['RESET']}\nPressione Enter para continuar...")
                         case '2':
                             print(f'{CORES["ITALICO"]}Você está consultando uma senha, deixe o nome do serviço em branco para sair... {CORES["RESET"]}\n')
                             servico = input('Digite o nome do serviço da senha que você deseja consultar: ')
@@ -156,7 +178,7 @@ def main():
                             else:
                                 print(f"\nEsse serviço {CORES['NEGRITO']}não está no cofre{CORES['RESET']}, verifique se você o digitou certo ou se ainda não adicionou-o.")
 
-                            input('Pressione alguma tecla para continuar...')
+                            input('Pressione Enter para continuar...')
                         case '3':
                             print(f'{CORES["ITALICO"]}Você está alterando uma senha, deixe o nome do serviço em branco para sair... {CORES["RESET"]}\n')
                             servico = input('Digite o nome do serviço da senha que você deseja alterar: ')
@@ -176,7 +198,7 @@ def main():
                             else:
                                 print(f"\nEsse serviço {CORES['NEGRITO']}não está no cofre{CORES['RESET']}, verifique se você o digitou certo ou se ainda não adicionou-o.")
 
-                            input('Pressione alguma tecla para continuar...')
+                            input('Pressione Enter para continuar...')
                         case '4':
                             print(f'{CORES["ITALICO"]}Você está apagando uma senha, deixe o nome do serviço em branco para sair... {CORES["RESET"]}\n')
                             servico = input('Digite o nome do serviço da senha que você deseja apagar: ')
@@ -193,69 +215,100 @@ def main():
                             else:
                                 print(f"\nEsse serviço {CORES['NEGRITO']}não está no cofre{CORES['RESET']}, verifique se você o digitou certo ou se ainda não adicionou-o.")
 
-                            input('Pressione alguma tecla para continuar...')
+                            input('Pressione Enter para continuar...')
                         case '5':
                             if len(cofre) > 0:
                                 print("Senhas salvas no CofreSeguro: ")
                                 print(f"\n{CORES['NEGRITO']}{'Serviço':>16} {'Credencial':>24} {'Senha':>20} {'Categoria':>16} {'Observação':>64} {CORES['RESET']}")
                                 for servico, dados in cofre.items():
-                                    print(f"{servico:>16} {dados['credencial']:>24} {manipularSenha('previa', dados['senha']):>20} {dados['classe']:>16} {dados['obs']:>64}")
+                                    print(f"{servico:>16} {dados['credencial']:>24} {manipularSenha('previa', dados['senha']):>20} {dados['categoria']:>16} {dados['obs']:>64}")
                             else:
                                 print("Não há senhas no cofre!")
-                            input('\nPressione alguma tecla para continuar...')
+                            input('\nPressione Enter para continuar...')
+                        case '6':
+                            print(f"\nCategorias disponíveis:{CORES["CINZA"]}")
+                            printarCategorias(categorias)
+                            while True:
+                                categoriaAnalisada = int(input(f"{CORES["RESET"]}Digite a categoria desejada com base na lista acima (de 1 a {len(categorias)}): ")) - 1
+                                if categoriaAnalisada < 0 or categoriaAnalisada > (len(categorias) - 1):
+                                    print(f"{COLOR["VERMELHO"]}Categoria inválida, digite um número de 1 a {len(categorias)}.{COLOR["RESET"]}")
+                                else:
+                                    break
+                            for servico in cofre.values():
+                                if categorias[categoriaAnalisada] == servico['categoria']:
+                                    print(servico)
+                            input(f"{CORES["RESET"]}\nPressione Enter para continuar...")
                         case '0':
                             break
                         case _:
-                            input(f"Opção inválida!\nAperte qualquer tecla para tentar novamente...")
+                            input(f"Opção inválida!\nPressione Enter para tentar novamente...")
             case '2':
                 while True:
-                    os.system('cls')
+                    os.system('clear')
                     print(f"{CORES['VERDE']}=== CofreSeguro ==={CORES['RESET']}")
                     print(f"{CORES['ITALICO']}Você está no menu de {CORES['NEGRITO']}categorias.{CORES['RESET']}")
 
                     
                     print(f'\n\n{CORES["NEGRITO"]}Opções:{CORES["RESET"]} \n1. Adicionar categoria\n2. Visualizar categorias\n3. Remover categoria\n0. Sair')
                     operacao = input('Digite o número da operação: ')
-                    os.system('cls')
+                    os.system('clear')
                     match operacao:
+                        case '1':
+                            novaCategoria = input("Digite a categoria a ser adicionada: ").capitalize()
+                            if novaCategoria not in categorias:
+                                categorias.append(novaCategoria)
+                                csv.salvarCSV(DIRETORIOS["categorias"], categorias, 'categoria')
+                                input(f"\n\n{CORES['VERDE']}A categoria {CORES['NEGRITO']}{novaCategoria}{CORES['RESET']} {CORES['VERDE']}foi adicionada!{CORES['RESET']}\nPressione Enter para continuar...")
+                            else:
+                                print(f"{CORES["VERMELHO"]}A categoria já se encontra na lista de categorias!{CORES["RESET"]}")
+                        case '2':
+                            print(f"As categorias atuais são:{CORES['CINZA']}")
+                            printarCategorias(categorias)
+                            input(f"{CORES["RESET"]}\nPressione Enter para continuar...")
+                        case '3':
+                            removCategoria = input("Digite a categoria a ser removida: ")
+                            if removCategoria in categorias:
+                                categorias.pop(categorias.index(removCategoria))
+                                csv.salvarCSV(DIRETORIOS["categorias"], categorias, 'categoria')
+                                input(f"\n\n{CORES['VERDE']}A categoria {CORES['NEGRITO']}{removCategoria}{CORES['RESET']} {CORES['VERDE']}foi removida!{CORES['RESET']}\nPressione Enter para continuar...")
+                            else:
+                                print(f"{CORES["VERMELHO"]}A categoria não se encontra na lista de categorias!{CORES["RESET"]}")
                         case '0':
                             break
                         case _:
-                            input(f"Opção inválida!\nAperte qualquer tecla para tentar novamente...")
+                            input(f"Opção inválida!\nPressione Enter para tentar novamente...")
             case '3':
                 while True:
-                    os.system('cls')
+                    os.system('clear')
                     print(f"{CORES['VERDE']}=== CofreSeguro ==={CORES['RESET']}")
                     print(f"{CORES['ITALICO']}Você está no menu de {CORES['NEGRITO']}registro de auditoria.{CORES['RESET']}")
 
 
                     print(f'\n\n{CORES["NEGRITO"]}Opções:{CORES["RESET"]} \n1. Visualizar registro completo\n2. Visualizar registro por operação\n0. Sair')
                     operacao = input('Digite o número da operação: ')
-                    os.system('cls')
+                    os.system('clear')
                     match operacao:
                         case '1':
                             print(f'Todos os registros: {CORES["CINZA"]}')
                             printarLog(log)
-                            input(f'{CORES["RESET"]}\nPressione alguma tecla para continuar...')
+                            input(f'{CORES["RESET"]}\nPressione Enter para continuar...')
                         case '2':
                             operacaoLog = input("Digite a operação para pesquisar nos registros (adicionar/consultar/alterar/apagar): ")
                             print(f'Registros da operação {operacaoLog}: {CORES["CINZA"]}')
                             printarLog(log, operacaoLog)
-                            input(f'{CORES["RESET"]}\nPressione alguma tecla para continuar...')
+                            input(f'{CORES["RESET"]}\nPressione Enter para continuar...')
                         case '0':
                             break
                         case _:
-                            input(f"Opção inválida!\nAperte qualquer tecla para tentar novamente...")
+                            input(f"Opção inválida!\nPressione Enter para tentar novamente...")
             case '0':
                 print("Fechando cofre...")
                 break
             case _:
-                input(f"Opção inválida!\nAperte qualquer tecla para tentar novamente...")
+                input(f"Opção inválida!\nPressione Enter para tentar novamente...")
                 
 
 
 if __name__ == "__main__":
     # iniciar o programa
     main()
-    
-    
