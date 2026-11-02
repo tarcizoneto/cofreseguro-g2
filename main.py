@@ -156,7 +156,7 @@ def main():
                     print(f"{CORES['ITALICO']}Você está no menu de {CORES['NEGRITO']}senhas.{CORES['RESET']}")
 
 
-                    print(f'\n\n{CORES["NEGRITO"]}Opções:{CORES["RESET"]} \n1. Adicionar senha\n2. Consultar senha\n3. Alterar senha\n4. Apagar senha\n5. Listar senhas\n6. Listar senhas por categoria\n0. Sair')
+                    print(f'\n{CORES["NEGRITO"]}Opções:{CORES["RESET"]} \n1. Adicionar senha\n2. Consultar senha\n3. Alterar senha\n4. Apagar senha\n5. Listar senhas\n6. Listar senhas por categoria\n7. Apagar todas as senhas {CORES["VERMELHO"]}{CORES["NEGRITO"]}(USE COM CUIDADO){CORES["RESET"]}\n0. Sair')
                     operacao = input('Digite o número da operação: ')
                     limparTerminal()
                     match operacao:
@@ -265,6 +265,17 @@ def main():
                             printarCofre(cofre, categoriaAnalisada)
                             
                             input(f"{CORES['RESET']}\nPressione Enter para continuar...")
+                        case '7':
+                            apagar = input(f"{CORES["VERMELHO"]}Você escolheu apagar todas as senhas, escreva {CORES["NEGRITO"]}\"SIM\"{CORES["RESET"]}{CORES["VERMELHO"]} para confirmar ou pressione Enter para sair:{CORES["RESET"]} ")
+                            if apagar == "SIM":
+                                cofre = {}
+                                print(f"As senhas foram apagadas")
+                                log = csv.registrarLog(DIRETORIOS['log'], log, 'apagar', "Todas as senhas")
+                                csv.salvarCSV(DIRETORIOS["cofre"], cofre, 'servico')
+                                
+                                input(f"{CORES['RESET']}\nPressione Enter para continuar...")
+                            else:
+                                continue
                         case '0':
                             break
                         case _:

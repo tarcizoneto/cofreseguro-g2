@@ -119,9 +119,14 @@ def registrarLog(onde, log:list, operacao,oqueMudou):
     # tabela:
     # operacao,quando,alteracoes
 
-    # montar a frasezinha: tal coisa foi alterada, por exemplo: (ADICIONAR) A senha do serviço Reddit foi adicionada.'
-    alteracoes = f"({operacao.upper()}) A senha do serviço {oqueMudou} foi {operacao[0:len(operacao)-1]}da."
-    
+    # Se apagarmos todas as senhas essa vai ser a mensagem
+    if oqueMudou == "Todas as senhas":
+        alteracoes = f"({operacao.upper()}) Todas as senhas foram apagadas."
+    else:
+        # montar a frasezinha: tal coisa foi alterada, por exemplo: (ADICIONAR) A senha do serviço Reddit foi adicionada.'
+        alteracoes = f"({operacao.upper()}) A senha do serviço {oqueMudou} foi {operacao[0:len(operacao)-1]}da."
+
+
     log.insert(0, {
         'operacao': operacao,
         'quando': datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
