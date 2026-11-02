@@ -72,7 +72,7 @@ def printarCategorias(categorias, mostrarIndices = True): # mostrarIndices indic
 
 def printarCofre(cofre, categoriaAnalisar=None): # criamos essa função pra printar as senhas de um dicionario desejado, já que além da listagem normal, tem a listagem entre categorias, ficaria uma bagunça isso jogado duas vezes no código 
 
-    printouSenhas = False
+    printouSenhas = False # essa variável serve pra verificar se a função printou alguma senha ou não, já que não tem como verificar se existe alguma senha
 
     if len(cofre) > 0:
         print(f"\n{CORES['NEGRITO']}{'Serviço':>16} {'Credencial':>24} {'Senha':>20} {'Categoria':>16} {'Observação':>40} {CORES['RESET']}") # cabeçalho
@@ -81,9 +81,9 @@ def printarCofre(cofre, categoriaAnalisar=None): # criamos essa função pra pri
                                           # a função entende que tem que caçar as senhas e printar só as que forem da categoria pedida
             for servico, dados in cofre.items():
                 if categorias[categoriaAnalisar] == dados['categoria']: # to percorrendo todas as senhas, se esta estiver com a caegoria que eu pedi, entao printa!
-                    printouSenhas = True
+                    printouSenhas = True # no momento em que printar uma senha, a variavel se torna true e lá no final, não precisa mais printar que não existe nenhuma senha
                     print(f"{servico:>16} {dados['credencial']:>24} {manipularSenha('previa', dados['senha']):>20} {dados['categoria']:>16} {dados['obs']:>40}")
-            if not printouSenhas:
+            if not printouSenhas: # se nao printou nenhuma senha, é porque não tem nenhuma senha com essa categoria.
                 print(f"{CORES['VERMELHO']}Não há senhas salvas com essa categoria.{CORES['VERMELHO']}")
         else: # se não, printa logo tudo mesmo
             for servico, dados in cofre.items():
@@ -111,14 +111,15 @@ def manipularSenha(acao, senha): # separei em função os atos de visualizar e c
             raise ValueError(f'Mal uso da função de manipulação de senhas, {acao} não é uma ação válida')
 
 
-def acharCategorias(cofre):
-    categorias = []
-    for servico in cofre.values():
-        if servico['categoria'] not in categorias:
-            if 'categoria' in servico:
-                categorias.append(servico['categoria'])
-    return categorias
-
+# essa função serviria caso a gente não tivesse um csv para salvar as categorias, e daí precisaríamos buscar as categorias ao percorrer todas as senhas,
+# mas agora, nós salvamos as categorias em csv.
+# def acharCategorias(cofre):
+#     categorias = []
+#     for servico in cofre.values():
+#         if servico['categoria'] not in categorias:
+#             if 'categoria' in servico:
+#                 categorias.append(servico['categoria'])
+#     return categorias
 
 
 
@@ -160,10 +161,10 @@ def main():
                     limparTerminal()
                     match operacao:
                         case '1':
-                            print(f'{CORES["ITALICO"]}Você está adicionando uma senha, deixe o nome do serviço em branco para sair... {CORES["RESET"]}\n')
+                            print(f'{CORES["ITALICO"]}Você está adicionando uma senha, deixe o nome do serviço em branco para sair... {CORES["RESET"]}\n') # uma ótima funcionalidade é pra que, caso o usuario queira sair e não quer realmente adicionar uma senha, só precisa deixar em branco 
                             servico = input('Digite o nome de serviço no qual essa senha está sendo usada: ').capitalize()
-                            if servico == '':
-                                continue
+                            if servico == '': # o programa vê se ta em branco, e se tiver, é porque o usuario quer sair
+                                continue # entao a gente sai
                             elif servico in cofre:
                                 input(f"\n\nEsse serviço {CORES['NEGRITO']}já tem uma senha cadastrada!{CORES['RESET']}\nPressione Enter para continuar...")
                                 continue
@@ -171,10 +172,10 @@ def main():
                             senha = input("Digite a senha: ") # todo: alguma forma de criptografia
                             print(f"\nCategorias disponíveis:{CORES['CINZA']}")
                             printarCategorias(categorias)
-                            while True:
+                            while True: # loop basiquinho pra forçar o usuário a digitar uma categoria válida, se o número não estiver no alcance, ele repete até estar
                                 categoria = int(input(f"{CORES['RESET']}Digite a categoria desejada com base na lista acima (de 1 a {len(categorias)}): ")) - 1
                                 if categoria < 0 or categoria > (len(categorias) - 1):
-                                    print(f'{CORES["VERMELHO"]}Categoria inválida, digite um número de 1 a {len(categorias)}.{CORES["RESET"]}')
+                                    print(f'{CORES["VERMELHO"]}Categoria inválida, digite um número de 1 a {len(categorias)}.{CORES["RESET"]}') # olha aí, digite um numero de 1 até 4, por exemplo, se tiver 4 categorias
                                 else:
                                     break
                             observacao = input(f"Digite uma observação para essa senha {CORES['ITALICO']}(ou deixe em branco, caso não queira){CORES['RESET']}: ")
@@ -286,11 +287,11 @@ def main():
                             if novaCategoria == '':
                                 continue
 
-                            if novaCategoria not in categorias:
+                            if novaCategoria not in categorias: # se já nao existir uma categoria, entao eh p adicionar essa
                                 categorias.append(novaCategoria)
                                 csv.salvarCSV(DIRETORIOS["categorias"], categorias, 'categoria')
                                 print(f"\n\n{CORES['VERDE']}A categoria {CORES['NEGRITO']}{novaCategoria}{CORES['RESET']} {CORES['VERDE']}foi adicionada!")
-                            else:
+                            else: # e avisar se já existe a catgoria
                                 print(f'{CORES["VERMELHO"]}A categoria {CORES["NEGRITO"]}{novaCategoria}{CORES["RESET"]} {CORES["VERMELHO"]}já se encontra na lista de categorias!{CORES["RESET"]}')
                             input(f"{CORES['RESET']}\nPressione Enter para continuar...")
                         case '2':
@@ -306,11 +307,11 @@ def main():
                             if removCategoria == '':
                                 continue
 
-                            if removCategoria in categorias:
+                            if removCategoria in categorias: # só remover se existir, né
                                 categorias.pop(categorias.index(removCategoria))
                                 csv.salvarCSV(DIRETORIOS["categorias"], categorias, 'categoria')
                                 print(f"\n\n{CORES['VERDE']}A categoria {CORES['NEGRITO']}{removCategoria}{CORES['RESET']} {CORES['VERDE']}foi removida!")
-                            else:
+                            else: # se não existir a categoria, avisar
                                 print(f'{CORES["VERMELHO"]}A categoria {CORES["NEGRITO"]}{removCategoria}{CORES["RESET"]}{CORES["VERMELHO"]} não se encontra na lista de categorias!{CORES["RESET"]}')
                             input(f"{CORES['RESET']}\nPressione Enter para continuar...")
                         case '0':
@@ -321,7 +322,7 @@ def main():
                 while True:
                     limparTerminal()
                     print(f"{CORES['VERDE']}=== CofreSeguro ==={CORES['RESET']}")
-                    print(f"{CORES['ITALICO']}Você está no menu de {CORES['NEGRITO']}registro de auditoria.{CORES['RESET']}")
+                    print(f"{CORES['ITALICO']}Você está no menu de {CORES['NEGRITO']}registro de auditoria.{CORES['RESET']}") # o famigerado log!!111!
 
 
                     print(f'\n\n{CORES["NEGRITO"]}Opções:{CORES["RESET"]} \n1. Visualizar registro completo\n2. Visualizar registro por operação\n0. Sair')

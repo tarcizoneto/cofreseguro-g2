@@ -8,6 +8,7 @@
 # é preciso se atentar a isso porque o esquema de ler os csv é justamente dar o split em virgulas
 
 from datetime import datetime
+import os
 
 def carregarCSV(qual, ehLista = False):
     data = {}
@@ -15,36 +16,39 @@ def carregarCSV(qual, ehLista = False):
     chaves = []
     estaLendoChaves = True # na primeira linha, tem as chaves do dicionario, essa variavel serve pra dizer que ta lendo as chaves, e depois que lê, fica falsa, e daí se le os valores!
 
-
-    with open(qual, 'r', encoding='UTF-8') as csv:
-        csv = csv.read()
-        if len(csv) != 0:
-            if csv[-1] == '\n': # se tiver a merda de uma quebra de linha sobrando no csv, essa função quebra e faz tudo se tornar uma lista vazia...
-                csv = csv[0:-1]
-            for linha in csv.split('\n'):
-                dados = linha.split(',')
-                if estaLendoChaves:
-                    chaves = dados
-                    estaLendoChaves = False
-                else:
-                    if len(dados) == 1: # quando só tem uma coluna, isso é uma lista apenas, e nao um dicionario
-                        dataL.append(dados[0])
-                        data = dataL
+    if os.path.isfile(qual): # ver se o csv existe, se não, ele cria um vazio
+        with open(qual, 'r', encoding='UTF-8') as csv:
+            csv = csv.read()
+            if len(csv) != 0:
+                if csv[-1] == '\n': # se tiver a merda de uma quebra de linha sobrando no csv, essa função quebra e faz tudo se tornar uma lista vazia...
+                    csv = csv[0:-1]
+                for linha in csv.split('\n'):
+                    dados = linha.split(',')
+                    if estaLendoChaves:
+                        chaves = dados
+                        estaLendoChaves = False
                     else:
-                        for i in range(len(dados)):
-                            # [dados[0]]?? = o primeiro indice de qualquer linha guarda a chave pai do dicionario de valores, no caso do cofre:
-                            # o primeiro indice é o nome do serviço, ele quem vai ser usado pra resgatar os outros dados (senha, categoria)
+                        if len(dados) == 1: # quando só tem uma coluna, isso é uma lista apenas, e nao um dicionario
+                            dataL.append(dados[0])
+                            data = dataL
+                        else:
+                            for i in range(len(dados)):
+                                # [dados[0]]?? = o primeiro indice de qualquer linha guarda a chave pai do dicionario de valores, no caso do cofre:
+                                # o primeiro indice é o nome do serviço, ele quem vai ser usado pra resgatar os outros dados (senha, categoria)
 
-                            # já os outros indices equivalem cada um a suas chaves, isso sao justamente as colunas do csv. por isso o [chaves[i]]
-                            if ehLista:
-                                if i == 0:
-                                    dataL.append({}) # inicializar um novo dicionario pra guardar o dados dessa linha, ja que nesse caso, é disposto por dicionarios em uma lista
-                                dataL[-1][chaves[i]] = dados[i]
-                            else:
-                                if i == 0:
-                                    data[dados[0]] = {} # inicializar a tal chave pai
-                                    continue
-                                data[dados[0]][chaves[i]] = dados[i]
+                                # já os outros indices equivalem cada um a suas chaves, isso sao justamente as colunas do csv. por isso o [chaves[i]]
+                                if ehLista:
+                                    if i == 0:
+                                        dataL.append({}) # inicializar um novo dicionario pra guardar o dados dessa linha, ja que nesse caso, é disposto por dicionarios em uma lista
+                                    dataL[-1][chaves[i]] = dados[i]
+                                else:
+                                    if i == 0:
+                                        data[dados[0]] = {} # inicializar a tal chave pai
+                                        continue
+                                    data[dados[0]][chaves[i]] = dados[i]
+    else: # criar um csv vazio, já que tentou carregar um arquivo que nao existe
+        with open(qual, 'w', encoding='UTF-8') as csv:
+                csv.write('')
     if ehLista:
         data = dataL
     return data
