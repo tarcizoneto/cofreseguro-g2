@@ -170,14 +170,19 @@ def main():
                                 continue
                             cred = input("Digite a credencial (usuário, e-mail ou login) dessa senha: ")
                             senha = input("Digite a senha: ") # todo: alguma forma de criptografia
-                            print(f"\nCategorias disponíveis:{CORES['CINZA']}")
-                            printarCategorias(categorias)
-                            while True: # loop basiquinho pra forçar o usuário a digitar uma categoria válida, se o número não estiver no alcance, ele repete até estar
-                                categoria = int(input(f"{CORES['RESET']}Digite a categoria desejada com base na lista acima (de 1 a {len(categorias)}): ")) - 1
-                                if categoria < 0 or categoria > (len(categorias) - 1):
-                                    print(f'{CORES["VERMELHO"]}Categoria inválida, digite um número de 1 a {len(categorias)}.{CORES["RESET"]}') # olha aí, digite um numero de 1 até 4, por exemplo, se tiver 4 categorias
-                                else:
-                                    break
+                            if len(categorias) > 0: # só se pode escolher uma categoria pra senha se existirem categorias, se nao tiver nenhuma por enquanto
+                                print(f"\nCategorias disponíveis:{CORES['CINZA']}")
+                                printarCategorias(categorias)
+                                while True: # loop basiquinho pra forçar o usuário a digitar uma categoria válida, se o número não estiver no alcance, ele repete até estar
+                                    categoria = int(input(f"{CORES['RESET']}Digite a categoria desejada com base na lista acima (de 1 a {len(categorias)}): ")) - 1
+                                    if categoria < 0 or categoria > (len(categorias) - 1):
+                                        print(f'{CORES["VERMELHO"]}Categoria inválida, digite um número de 1 a {len(categorias)}.{CORES["RESET"]}') # olha aí, digite um numero de 1 até 4, por exemplo, se tiver 4 categorias
+                                    else:
+                                        break
+                                categoriaEscolhida = categorias[categoria]
+                            else:
+                                categoriaEscolhida = '-'
+                                print(f"{CORES['CINZA']}{CORES['ITALICO']}Não existe nenhuma categoria, altere a senha em outro momento para assignar esse serviço a uma.{CORES['RESET']}")
                             observacao = input(f"Digite uma observação para essa senha {CORES['ITALICO']}(ou deixe em branco, caso não queira){CORES['RESET']}: ")
                             horario = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
                             if observacao == '': # se nao tiver nada a ser observado
@@ -185,7 +190,7 @@ def main():
                             cofre[servico] = {
                                     'credencial': cred,
                                     'senha': manipularSenha('registrar', senha),
-                                    'categoria': categorias[categoria],
+                                    'categoria': categoriaEscolhida,
                                     'registro': horario,
                                     'obs': observacao
                                 }
@@ -252,21 +257,23 @@ def main():
                             printarCofre(cofre)
                             input('\nPressione Enter para continuar...')
                         case '6':
-                            print(f"\nCategorias disponíveis:{CORES['CINZA']}")
-                            printarCategorias(categorias)
-                            while True:
-                                categoriaAnalisada = int(input(f"{CORES['RESET']}Digite a categoria desejada com base na lista acima (de 1 a {len(categorias)}): ")) - 1
-                                if categoriaAnalisada < 0 or categoriaAnalisada > (len(categorias) - 1):
-                                    print(f"{CORES['VERMELHO']}Categoria inválida, digite um número de 1 a {len(categorias)}.{CORES['RESET']}")
-                                else:
-                                    break
-                            limparTerminal()
-                            print(f"Senhas salvas com a categoria {CORES['NEGRITO']}{categorias[categoriaAnalisada]}{CORES['RESET']}: \n")
-                            printarCofre(cofre, categoriaAnalisada)
-                            
+                            if len(categorias) > 0: # pra poder listar as senhas por categorias, se precisa de uma categoria, se a lista de categorias tiver vazia, entao fudeu
+                                print(f"\nCategorias disponíveis:{CORES['CINZA']}")
+                                printarCategorias(categorias)
+                                while True:
+                                    categoriaAnalisada = int(input(f"{CORES['RESET']}Digite a categoria desejada com base na lista acima (de 1 a {len(categorias)}): ")) - 1
+                                    if categoriaAnalisada < 0 or categoriaAnalisada > (len(categorias) - 1):
+                                        print(f"{CORES['VERMELHO']}Categoria inválida, digite um número de 1 a {len(categorias)}.{CORES['RESET']}")
+                                    else:
+                                        break
+                                limparTerminal()
+                                print(f"Senhas salvas com a categoria {CORES['NEGRITO']}{categorias[categoriaAnalisada]}{CORES['RESET']}: \n")
+                                printarCofre(cofre, categoriaAnalisada)
+                            else: # fudeu
+                                print(f"{CORES['VERMELHO']}Para se listar senhas por categoria, é preciso que exista {CORES['NEGRITO']}pelo menos uma categoria.")
                             input(f"{CORES['RESET']}\nPressione Enter para continuar...")
                         case '7':
-                            apagar = input(f"{CORES["VERMELHO"]}Você escolheu apagar todas as senhas, escreva {CORES["NEGRITO"]}\"SIM\"{CORES["RESET"]}{CORES["VERMELHO"]} para confirmar ou pressione Enter para sair:{CORES["RESET"]} ")
+                            apagar = input(f'{CORES["VERMELHO"]}Você escolheu apagar todas as senhas, escreva {CORES["NEGRITO"]}\"SIM\"{CORES["RESET"]}{CORES["VERMELHO"]} para confirmar ou pressione Enter para sair:{CORES["RESET"]} ').upper()
                             if apagar == "SIM":
                                 cofre = {}
                                 print(f"As senhas foram apagadas")
