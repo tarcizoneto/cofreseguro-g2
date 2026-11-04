@@ -343,10 +343,6 @@ def log_buscarOperacao(log):
     return False
 
 
-
-
-
-
 # FUNÇÕES PRINCIPAIS
 
 def preparar(): 
