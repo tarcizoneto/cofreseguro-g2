@@ -245,7 +245,7 @@ def printarCofre(cofre, categoriaAnalisar=None): # criamos essa função pra pri
                 print(f"{CORES['VERMELHO']}Não há senhas salvas com essa categoria.{CORES['VERMELHO']}")
         else: # se não, printa logo tudo mesmo
             for servico, dados in cofre.items():
-                print(f"{servico:>16} {dados['credencial']:>24} {manipularSenha('previa', dados['senha']):>20} {dados['categoria']:>16} {dados['obs']:>40}")
+                print(f"{servico:>20} {dados['credencial']:>28} {manipularSenha('previa', dados['senha']):>26} {dados['categoria']:>16} {dados['obs']:>40}")
     else:
         print(f"{CORES['VERMELHO']}Não há senhas no cofre!{CORES['RESET']}")
 
