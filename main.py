@@ -102,11 +102,11 @@ def senha_adicionar(cofre, log):
         fortitude = seguranca.segura_senha(senha, senhasC)
 
         if fortitude == 'Média':
-            continuar = input("Deseja continuar com essa senha?(SIM/NÃO): ").upper()
+            continuar = input(f"Deseja continuar com essa senha, {CORES['ITALICO']}mesmo sendo tendo segurança média?{CORES['RESET']} (SIM/NÃO): ").upper()
             if continuar == "SIM": 
                 break
 
-            if continuar == "NÃO" or continuar == "NAO":
+            else: # se o usuario digitar "nao", ou so deixar em branco, é pra digitar de novo
                 continue
         
         if fortitude == 'Forte':
