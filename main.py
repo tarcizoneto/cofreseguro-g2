@@ -29,7 +29,6 @@ DIRETORIOS = {
     'senhasCom': 'dados/senhasComuns.csv',
     'log': 'dados/log.csv',
     'categorias': 'dados/categorias.csv'
-
 }
 
 
@@ -84,7 +83,6 @@ def limparTerminal(): # a merda do windows quer ser diferentão e usar "cls" pra
 
 
 
-
 # FUNÇÕES DO MENU SENHA
 
 def senha_adicionar(cofre, log):
@@ -102,7 +100,7 @@ def senha_adicionar(cofre, log):
         fortitude = seguranca.segura_senha(senha, senhasC)
 
         if fortitude == 'Média':
-            continuar = input(f"Deseja continuar com essa senha, {CORES['ITALICO']}mesmo sendo tendo segurança média?{CORES['RESET']} (SIM/NÃO): ").upper()
+            continuar = input(f"Deseja continuar com essa senha, {CORES['ITALICO']}mesmo tendo segurança média?{CORES['RESET']} (SIM/NÃO): ").upper()
             if continuar == "SIM": 
                 break
 
