@@ -6,7 +6,7 @@
 # isto é, dentro de algum valor, mais provavelmente na observação, tem uma virgula que não determina um novo valor,
 # mas sim, uma virgula usual, como a de gramática
 # é preciso se atentar a isso porque o esquema de ler os csv é justamente dar o split em virgulas
-
+#Trabalho para tia lily e tio luci
 from datetime import datetime
 import os
 

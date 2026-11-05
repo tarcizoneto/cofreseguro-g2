@@ -1,6 +1,11 @@
-# cofreseguro-g2
-Gerenciador de Credenciais Didático
+# COFRESEGURO-g2
+> 
+
+
 > Entrega do projeto CofreSeguro para a disciplina de Fundamentos de Programação.
+
+O **CofreSeguro** ajuda o usuário a organizar suas credenciais, entender a
+força de cada senha e enxergar esses riscos..
 > 
 > Grupo 2:
 > * ANDRESSA GABRIELLE BASTOS ALVES
