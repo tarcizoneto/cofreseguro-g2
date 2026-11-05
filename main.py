@@ -99,9 +99,17 @@ def senha_adicionar(cofre, log):
 
     while True: 
         senha = input("Digite a senha: ") # todo: alguma forma de criptografia
-        fortitude = seguranca.segura_senha(senha)
+        fortitude = seguranca.segura_senha(senha, senhasC)
 
-        if fortitude == 'Média' or fortitude == 'Forte':
+        if fortitude == 'Média':
+            continuar = input("Deseja continuar com essa senha?(SIM/NÃO): ").upper()
+            if continuar == "SIM": 
+                break
+
+            if continuar == "NÃO" or continuar == "NAO":
+                continue
+        
+        if fortitude == 'Forte':
             break
         
 
@@ -174,10 +182,17 @@ def senha_alterar(cofre, log):
 
         while True:
             novaSenha = input("Digite a nova senha: ")
-            fortitude = seguranca.segura_senha(novaSenha)
-            if fortitude == 'Média' or fortitude == 'Forte':
-                break
+            fortitude = seguranca.segura_senha(novaSenha, senhasC)
+            if fortitude == 'Média':
+                continuar = input("Deseja continuar com essa senha?(SIM/NÃO): ").upper()
+                if continuar == "SIM": 
+                    break
 
+                if continuar == "NÃO" or continuar == "NAO":
+                    continue
+        
+            if fortitude == 'Forte':
+                break
         cofre[servico]['senha'] = manipularSenha('registrar', novaSenha)
         cofre[servico]['registro'] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         log = csv.registrarLog(DIRETORIOS['log'], log, 'alterar', servico)

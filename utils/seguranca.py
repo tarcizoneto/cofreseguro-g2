@@ -38,12 +38,7 @@ CORES = {
     "BG_VERDE": "\033[42m",
     "BG_AZUL": "\033[44m"
 }
-DIRETORIOS = {
-    'cofre': 'dados/cofre.csv',
-    'senhasCom': 'dados/senhasComuns.csv',
-    'log': 'dados/log.csv',
-    'categorias': 'dados/categorias.csv'
-}
+
 
 # Separação dos caracteres em strigs 
 
@@ -52,9 +47,8 @@ maius = 'A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z'.split(",")
 nums = '1,2,3,4,5,6,7,8,9,0'.split(",")
 especiais = '!,@,#,$,%,&,*,_'.split(",")
 
-def segura_senha(senha):
+def segura_senha(senha, senhasComuns):
     #Importação das senhas comuns e definição dos contadores
-    senhasComuns = csv.carregarCSV(DIRETORIOS["senhasCom"])
     forca_da_senha = None
     cont_minus = 0
     cont_maius = 0
@@ -87,14 +81,14 @@ def segura_senha(senha):
         print(f'{CORES["VERDE"]}Senha Forte o suficiente!{CORES["RESET"]}')
         forca_da_senha = "Forte"
     elif cont_caracteres >= 8 and cont_maius != 0 and cont_nums != 0:
-        print(f'{CORES["AMARELO"]}Senha Média. Tente uma senha mais forte!{CORES["RESET"]}')
+        print(f'{CORES["AMARELO"]}Senha Média. Recomenda-se uma mais forte!{CORES["RESET"]}')
         forca_da_senha = "Média"
     else:
         print(f'{CORES["VERMELHO"]}Senha fraca. Tente uma senha mais forte!{CORES["RESET"]}')
         forca_da_senha = "Fraca"
 
     if forca_da_senha == 'Fraquíssima' or forca_da_senha == 'Fraca' or forca_da_senha == 'Média':
-        verificar = input("Gostaria de verificar as condições que fortificam a senha?(SIM/NÃO) ").upper()
+        verificar = input("Gostaria de verificar as condições que fortificam a senha?(SIM/NÃO): ").upper()
     
 
         if verificar == "SIM":
@@ -129,9 +123,8 @@ def segura_senha(senha):
                 print(f'{CORES['NEGRITO']}➜  A condição "Possui números" é:\t         {CORES["VERMELHO"]}inválida ❌{CORES['RESET']}')
         
         if verificar == "NAO" or verificar == "NÃO" :
-            print("Tente uma nova senha!")
+            print("")
 
     return forca_da_senha
 
-teste = input("Digite a senha: ")
-segura_senha(teste)
+
