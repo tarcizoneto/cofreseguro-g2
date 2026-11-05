@@ -1,6 +1,7 @@
 import os
 from utils import csv
 from datetime import datetime
+from utils import seguranca
 
 CORES = {
     "RESET": "\033[0m",
@@ -28,6 +29,7 @@ DIRETORIOS = {
     'senhasCom': 'dados/senhasComuns.csv',
     'log': 'dados/log.csv',
     'categorias': 'dados/categorias.csv'
+
 }
 
 
@@ -94,27 +96,43 @@ def senha_adicionar(cofre, log):
         input(f"\n\nEsse serviço {CORES['NEGRITO']}já tem uma senha cadastrada!{CORES['RESET']}\nPressione Enter para continuar...")
         return cofre, log, False
     cred = input("Digite a credencial (usuário, e-mail ou login) dessa senha: ")
-    senha = input("Digite a senha: ") # todo: alguma forma de criptografia
-    if len(categorias) > 0: # só se pode escolher uma categoria pra senha se existirem categorias, se nao tiver nenhuma por enquanto
-        print(f"\nCategorias disponíveis:{CORES['CINZA']}")
-        printarCategorias(categorias)
-        while True: # loop basiquinho pra forçar o usuário a digitar uma categoria válida, se o número não estiver no alcance, ele repete até estar
-            categoria = input(f"{CORES['RESET']}Digite a categoria desejada com base na lista acima (de 1 a {len(categorias)}, {CORES['ITALICO']}ou deixe em branco para não categorizar{CORES['RESET']}): ")
-            if categoria == '': # se o usuario nao tiver escrito nada, vamos entender que ele quis deixar a senha sem categoria.
-                
+
+    while True: 
+        senha = input("Digite a senha: ") # todo: alguma forma de criptografia
+        fortitude = seguranca.segura_senha(senha, senhasC)
+
+        if fortitude == 'Média':
+            continuar = input("Deseja continuar com essa senha?(SIM/NÃO): ").upper()
+            if continuar == "SIM": 
                 break
-            if categoria.isdigit(): # vamos ver se o numero que o usuario digitou pode se transformar em número, se nao, nem tenta converter pra int
-                categoria = int(categoria) - 1 # se eh um numero valido, entao converte e diminui um pra transformar o número em indice
-                if categoria < 0 or categoria > (len(categorias) - 1): # agora validar o número ne, se ta no alcance esperado
-                    print(f'{CORES["VERMELHO"]}Categoria inválida, digite um número de 1 a {len(categorias)}.{CORES["RESET"]}') # olha aí, digite um numero de 1 até 4, por exemplo, se tiver 4 categorias
-                else: # se tiver no alcance, para o loop porque já temos um numero valido pra categoria
+
+            if continuar == "NÃO" or continuar == "NAO":
+                continue
+        
+        if fortitude == 'Forte':
+            break
+        
+
+    if len(categorias) > 0: # só se pode escolher uma categoria pra senha se existirem categorias, se nao tiver nenhuma por enquanto
+            print(f"\nCategorias disponíveis:{CORES['CINZA']}")
+            printarCategorias(categorias)
+            while True: # loop basiquinho pra forçar o usuário a digitar uma categoria válida, se o número não estiver no alcance, ele repete até estar
+                categoria = input(f"{CORES['RESET']}Digite a categoria desejada com base na lista acima (de 1 a {len(categorias)}, {CORES['ITALICO']}ou deixe em branco para não categorizar{CORES['RESET']}): ")
+                if categoria == '': # se o usuario nao tiver escrito nada, vamos entender que ele quis deixar a senha sem categoria.
+                    
                     break
+                if categoria.isdigit(): # vamos ver se o numero que o usuario digitou pode se transformar em número, se nao, nem tenta converter pra int
+                    categoria = int(categoria) - 1 # se eh um numero valido, entao converte e diminui um pra transformar o número em indice
+                    if categoria < 0 or categoria > (len(categorias) - 1): # agora validar o número ne, se ta no alcance esperado
+                        print(f'{CORES["VERMELHO"]}Categoria inválida, digite um número de 1 a {len(categorias)}.{CORES["RESET"]}') # olha aí, digite um numero de 1 até 4, por exemplo, se tiver 4 categorias
+                    else: # se tiver no alcance, para o loop porque já temos um numero valido pra categoria
+                        break
+                else:
+                    print(f'{CORES["VERMELHO"]}Entrada inválida, digite um número VÁLIDO de 1 a {len(categorias)}.{CORES["RESET"]}')
+            if categoria == '':
+                categoriaEscolhida = '-' # categoria vazia
             else:
-                print(f'{CORES["VERMELHO"]}Entrada inválida, digite um número VÁLIDO de 1 a {len(categorias)}.{CORES["RESET"]}')
-        if categoria == '':
-            categoriaEscolhida = '-' # categoria vazia
-        else:
-            categoriaEscolhida = categorias[categoria] # categoria válida
+                categoriaEscolhida = categorias[categoria] # categoria válida
 
     else:
         categoriaEscolhida = '-'
@@ -161,9 +179,20 @@ def senha_alterar(cofre, log):
         return cofre, log, False
 
     if servico in cofre:
-        
-        novaSenha = input("Digite a nova senha: ")
 
+        while True:
+            novaSenha = input("Digite a nova senha: ")
+            fortitude = seguranca.segura_senha(novaSenha, senhasC)
+            if fortitude == 'Média':
+                continuar = input("Deseja continuar com essa senha?(SIM/NÃO): ").upper()
+                if continuar == "SIM": 
+                    break
+
+                if continuar == "NÃO" or continuar == "NAO":
+                    continue
+        
+            if fortitude == 'Forte':
+                break
         cofre[servico]['senha'] = manipularSenha('registrar', novaSenha)
         cofre[servico]['registro'] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         log = csv.registrarLog(DIRETORIOS['log'], log, 'alterar', servico)
@@ -341,10 +370,6 @@ def log_buscarOperacao(log):
         printarLog(log, operacaoLog)
         return True
     return False
-
-
-
-
 
 
 # FUNÇÕES PRINCIPAIS
