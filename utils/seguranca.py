@@ -95,6 +95,7 @@ def segura_senha(senha):
 
     if forca_da_senha == 'Fraquíssima' or forca_da_senha == 'Fraca' or forca_da_senha == 'Média':
         verificar = input("Gostaria de verificar as condições que fortificam a senha?(SIM/NÃO) ").upper()
+    
 
         if verificar == "SIM":
 # Verificação de confições
@@ -127,7 +128,7 @@ def segura_senha(senha):
             else:
                 print(f'{CORES['NEGRITO']}➜  A condição "Possui números" é:\t         {CORES["VERMELHO"]}inválida ❌{CORES['RESET']}')
         
-        if verificar == "NÃO":
+        if verificar == "NAO" or verificar == "NÃO" :
             print("Tente uma nova senha!")
 
     return forca_da_senha
