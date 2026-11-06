@@ -54,9 +54,17 @@ def segura_senha(senha, senhasComuns):
     cont_maius = 0
     cont_nums = 0
     cont_esp = 0
+    cont_difs = 0
+    cont_reps = 0
 
     # Contagem dos caracteres
+    senha_contada = ""
     for caracteres in senha:
+        if caracteres not in senha_contada:
+            cont_difs += 1
+        senha_contada += caracteres
+        if senha.count(caracteres) > cont_reps:
+            cont_reps = senha.count(caracteres)
         if caracteres in minus:
             cont_minus += 1
         if caracteres in maius:
@@ -66,26 +74,41 @@ def segura_senha(senha, senhasComuns):
         if caracteres in especiais:
             cont_esp += 1
 
+    print(cont_difs)
+    print(cont_reps)
+
     # Soma dos caracteres após a contagem
-    cont_caracteres = cont_minus + cont_maius + cont_nums + cont_esp
+    cont_caracteres = len(senha)
 
     # Checagem de força da senha
+
+
+    # Criação de variáveis das condições: 
+    condi_forte = cont_caracteres >= 10 and cont_esp != 0 and cont_minus != 0 and cont_maius != 0 and cont_nums != 0 and cont_difs >= 8 and cont_reps <= 10
+    condi_media = cont_caracteres >= 8 and cont_maius != 0 and cont_nums != 0 and cont_difs >= 5
+
+
 
     if cont_caracteres <= 5:
         print(f'{CORES["VERMELHO"]}Senha fraquíssima... Tenha mais criatividade :P{CORES["RESET"]}')
         forca_da_senha = "Fraquíssima"
+
     elif senha in senhasComuns:
         print(f'{CORES["VERMELHO"]}Esta é uma senha {CORES["NEGRITO"]}extremamente comum.{CORES["RESET"]}{CORES["VERMELHO"]} Tente outra!{CORES["RESET"]}')
         forca_da_senha = "Fraquíssima"
-    elif cont_caracteres >= 10 and cont_esp != 0 and cont_minus != 0 and cont_maius != 0 and cont_nums != 0:
+
+    elif condi_forte:
         print(f'{CORES["VERDE"]}Senha forte o suficiente!{CORES["RESET"]}')
         forca_da_senha = "Forte"
-    elif cont_caracteres >= 8 and cont_maius != 0 and cont_nums != 0:
+
+    elif condi_media:
         print(f'{CORES["AMARELO"]}Senha média. Recomenda-se uma mais forte!{CORES["RESET"]}')
         forca_da_senha = "Média"
+
     else:
         print(f'{CORES["VERMELHO"]}Senha fraca. Tente uma senha mais forte!{CORES["RESET"]}')
         forca_da_senha = "Fraca"
+
 
     if forca_da_senha == 'Fraquíssima' or forca_da_senha == 'Fraca' or forca_da_senha == 'Média':
         verificar = input("Gostaria de verificar as condições que fortificam a senha? (SIM/NÃO): ").upper()
@@ -93,40 +116,49 @@ def segura_senha(senha, senhasComuns):
 
         if verificar == "SIM":
 # Verificação de confições
-            print(f"\n==========================================================")
+            print(f"\n===============================================================")
 
             if cont_caracteres >= 10:
-                print(f'\n{CORES["NEGRITO"]}➜  A condição "Maior que 10 caracteres" é:\t{CORES["VERDE"]}válida{CORES["RESET"]}')
+                print(f'\n{CORES["NEGRITO"]}➜  A condição "Pelo menos 10 caracteres" é:\t     {CORES["VERDE"]}válida{CORES["RESET"]}')
             else:
-                print(f'\n{CORES["NEGRITO"]}➜  A condição "Maior que 10 caracteres" é:\t{CORES["VERMELHO"]}inválida{CORES["RESET"]}')
+                print(f'\n{CORES["NEGRITO"]}➜  A condição "Pelo menos 10 caracteres" é:\t     {CORES["VERMELHO"]}inválida{CORES["RESET"]}')
 
             
             if cont_esp != 0:
-                print(f'{CORES["NEGRITO"]}➜  A condição "Possui caracteres especiais" é:\t{CORES["VERDE"]}válida{CORES["RESET"]}')
+                print(f'{CORES["NEGRITO"]}➜  A condição "Possui caracteres especiais" é:\t     {CORES["VERDE"]}válida{CORES["RESET"]}')
             else:
-                print(f'{CORES["NEGRITO"]}➜  A condição "Possui caracteres especiais" é:\t{CORES["VERMELHO"]}inválida{CORES["RESET"]}')
+                print(f'{CORES["NEGRITO"]}➜  A condição "Possui caracteres especiais" é:\t     {CORES["VERMELHO"]}inválida{CORES["RESET"]}')
 
             
             if cont_minus != 0:
-                print(f'{CORES["NEGRITO"]}➜  A condição "Possui letras minúsculas" é:\t{CORES["VERDE"]}válida{CORES["RESET"]}')
+                print(f'{CORES["NEGRITO"]}➜  A condição "Possui letras minúsculas" é:\t     {CORES["VERDE"]}válida{CORES["RESET"]}')
             else:
-                print(f'{CORES["NEGRITO"]}➜  A condição "Possui letras minúsculas" é:\t{CORES["VERMELHO"]}inválida{CORES["RESET"]}')
+                print(f'{CORES["NEGRITO"]}➜  A condição "Possui letras minúsculas" é:\t     {CORES["VERMELHO"]}inválida{CORES["RESET"]}')
             
             if cont_maius != 0:
-                print(f'{CORES["NEGRITO"]}➜  A condição "Possui letras maiúsculas" é:\t{CORES["VERDE"]}válida{CORES["RESET"]}')
+                print(f'{CORES["NEGRITO"]}➜  A condição "Possui letras maiúsculas" é:\t     {CORES["VERDE"]}válida{CORES["RESET"]}')
             else:
-                print(f'{CORES["NEGRITO"]}➜  A condição "Possui letras maiúsculas" é:\t{CORES["VERMELHO"]}inválida{CORES["RESET"]}')
+                print(f'{CORES["NEGRITO"]}➜  A condição "Possui letras maiúsculas" é:\t     {CORES["VERMELHO"]}inválida{CORES["RESET"]}')
 
             if cont_nums != 0:
-                print(f'{CORES["NEGRITO"]}➜  A condição "Possui números " é:\t        {CORES["VERDE"]}válida{CORES["RESET"]}')
+                print(f'{CORES["NEGRITO"]}➜  A condição "Possui números " é:\t             {CORES["VERDE"]}válida{CORES["RESET"]}')
             else:
-                print(f'{CORES["NEGRITO"]}➜  A condição "Possui números" é:\t         {CORES["VERMELHO"]}inválida{CORES["RESET"]}')
+                print(f'{CORES["NEGRITO"]}➜  A condição "Possui números" é:\t              {CORES["VERMELHO"]}inválida{CORES["RESET"]}')
+
+            if cont_reps <= 10:
+                print(f'{CORES["NEGRITO"]}➜  A condição "Até 10 caracteres repetidos" é:\t     {CORES["VERDE"]}válida{CORES["RESET"]}')
+            else:
+                print(f'{CORES["NEGRITO"]}➜  A condição "Até 10 caracteres repetidos" é:\t     {CORES["VERMELHO"]}inválida{CORES["RESET"]}')
+
+            if cont_difs >= 8:
+                print(f'{CORES["NEGRITO"]}➜  A condição "No mínimo 8 caracteres diferentes" é: {CORES["VERDE"]}válida{CORES["RESET"]}')
+            else:
+                print(f'{CORES["NEGRITO"]}➜  A condição "No mínimo 8 caracteres diferentes" é: {CORES["VERMELHO"]}inválida{CORES["RESET"]}')
             
-            print(f"\n==========================================================\n")
+            print(f"\n===============================================================\n")
         
         # if verificar == "NAO" or verificar == "NÃO" : # no caso, nao precisa printar nada pq ja volta p função la de mudar a senha
         #     print("")
 
     return forca_da_senha
-
 
