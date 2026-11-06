@@ -56,12 +56,6 @@ def segura_senha(senha, senhasComuns):
     cont_nums = 0
     cont_esp = 0
 
-    #lista de riscos de senha eu andressa mexi aqui tb!!
-    riscos = []
-
-    # Lista de sequências previsíveis abaixo dos riscos das senhas (andressa)
-    sequencias = ["123456", "654321", "12345", "abcdef", "qwerty"]
-
     # Contagem dos caracteres
     for caracteres in senha:
         if caracteres in minus:
@@ -73,13 +67,7 @@ def segura_senha(senha, senhasComuns):
         if caracteres in especiais:
             cont_esp += 1
 
-    # Detecção de sequências previsíveis nas senhas (eu andressa mexi aqui)
-    for sequencia in sequencias:
-        if sequencia in senha.lower():
-            riscos.append("Contém senha previsível")
-            print(sequencia)
-
-    # Soma dos caracteres
+    # Soma dos caracteres após a contagem
     cont_caracteres = cont_minus + cont_maius + cont_nums + cont_esp
 
     # Checagem de força da senha
@@ -141,3 +129,5 @@ def segura_senha(senha, senhasComuns):
         #     print("")
 
     return forca_da_senha
+
+
