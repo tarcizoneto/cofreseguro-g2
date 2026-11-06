@@ -89,7 +89,7 @@ def segura_senha(senha, senhasComuns):
         forca_da_senha = "Fraca"
 
     if forca_da_senha == 'Fraquíssima' or forca_da_senha == 'Fraca' or forca_da_senha == 'Média':
-        verificar = input("Gostaria de verificar as condições que fortificam a senha? (SIM/NÃO): ").upper()
+        verificar = input(f"Gostaria de verificar as condições que {CORES['NEGRITO']}fortificam a senha? {CORES['RESET']}{CORES['ITALICO']}(SIM/NÃO){CORES['RESET']}: ").upper()
     
 
         if verificar == "SIM":
