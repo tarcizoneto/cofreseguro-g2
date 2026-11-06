@@ -23,17 +23,25 @@ serviço e mostra quais serviços.
 - **Registro de auditoria:** exibe todas as operações relevantes (**inclusive revelar
   uma senha**) são gravadas em `log.csv` com operação, serviço afetado, data e hora
 
-### Menu Principal:
+### Menu principal:
 ```
-    1. Adicionar credencial
-    2. Listar credenciais
-    3. Editar credencial
-    4. Excluir credencial
-    5. Revelar senha
-    6. Gerenciar categorias
-    7. Verificar senhas repetidas
-    8. Relatório de segurança
-    9. Consultar log de auditoria
+1. Senhas
+2. Categorias
+3. Registro de Auditoria
+0. Sair
+
+```
+```
+Menu de senhas: 
+
+1. Adicionar senha
+2. Consultar senha
+3. Alterar senha
+4. Apagar senha
+5. Listar senhas
+6. Listar senhas por categoria
+7. Apagar todas as senhas (USE COM CUIDADO)
+0. Sair
 
 ```
 ## <span style="color: salmon;">Níveis:</span> 

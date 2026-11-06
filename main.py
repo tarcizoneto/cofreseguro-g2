@@ -29,7 +29,6 @@ DIRETORIOS = {
     'senhasCom': 'dados/senhasComuns.csv',
     'log': 'dados/log.csv',
     'categorias': 'dados/categorias.csv'
-
 }
 
 
@@ -84,25 +83,30 @@ def limparTerminal(): # a merda do windows quer ser diferentão e usar "cls" pra
 
 
 
-
 # FUNÇÕES DO MENU SENHA
 
 def senha_adicionar(cofre, log):
     print(f'{CORES["ITALICO"]}Você está adicionando uma senha, deixe o nome do serviço em branco para sair... {CORES["RESET"]}\n') # uma ótima funcionalidade é pra que, caso o usuario queira sair e não quer realmente adicionar uma senha, só precisa deixar em branco
-    servico = input('Digite o nome de serviço no qual essa senha está sendo usada: ').capitalize()
+    servico = input('Digite o nome de serviço no qual essa senha está sendo usada: ').strip().capitalize()
     if servico == '': # o programa vê se ta em branco, e se tiver, é porque o usuario quer sair
         return cofre, log, False # entao a gente sai
     elif servico in cofre:
-        input(f"\n\nEsse serviço {CORES['NEGRITO']}já tem uma senha cadastrada!{CORES['RESET']}\nPressione Enter para continuar...")
+        input(f"\n\nEsse serviço {CORES['NEGRITO']}já tem uma senha cadastrada!{CORES['RESET']}")
         return cofre, log, False
-    cred = input("Digite a credencial (usuário, e-mail ou login) dessa senha: ")
+    while True:
+        cred = input("Digite a credencial (usuário, e-mail ou login) dessa senha: ").strip()
+        if cred: # se a credencial nao estiver vazia, entao foi validada, eh show
+            break
+        # se estiver vazia, o loop continua e printa esse aviso aqui embaixo
+        print(f"{CORES['VERMELHO']}A credencial precisa ter {CORES['NEGRITO']}pelo menos um caractere!{CORES['RESET']}\n")
+
 
     while True: 
-        senha = input("Digite a senha: ") # todo: alguma forma de criptografia
+        senha = input("Digite a senha: ").strip() # todo: alguma forma de criptografia
         fortitude = seguranca.segura_senha(senha, senhasC)
 
         if fortitude == 'Média':
-            continuar = input(f"Deseja continuar com essa senha, {CORES['ITALICO']}mesmo sendo tendo segurança média?{CORES['RESET']} (SIM/NÃO): ").upper()
+            continuar = input(f"Deseja continuar com essa senha, {CORES['ITALICO']}mesmo tendo segurança média?{CORES['RESET']} {CORES['ITALICO']}(SIM/NÃO){CORES['RESET']}: ").upper()
             if continuar == "SIM": 
                 break
 
@@ -132,11 +136,11 @@ def senha_adicionar(cofre, log):
             if categoria == '':
                 categoriaEscolhida = '-' # categoria vazia
             else:
-                categoriaEscolhida = categorias[categoria] # categoria válida
+                categoriaEscolhida = categorias[categoria] # categoria válida\
 
     else:
         categoriaEscolhida = '-'
-        print(f"{CORES['CINZA']}{CORES['ITALICO']}Não existe nenhuma categoria, altere a senha em outro momento para assignar esse serviço a uma.{CORES['RESET']}")
+        print(f"{CORES['CINZA']}{CORES['ITALICO']}Não existe nenhuma categoria, altere a senha em outro momento para atribuir esse serviço a uma.{CORES['RESET']}")
     observacao = input(f"Digite uma observação para essa senha {CORES['ITALICO']}(ou deixe em branco, caso não queira){CORES['RESET']}: ")
     horario = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
     if observacao == '': # se nao tiver nada a ser observado
@@ -158,8 +162,11 @@ def senha_adicionar(cofre, log):
     return cofre, log, True
                                 
 def senha_consultar(cofre, log):
-    print(f'{CORES["ITALICO"]}Você está consultando uma senha, deixe o nome do serviço em branco para sair... {CORES["RESET"]}\n')
-    servico = input('Digite o nome do serviço da senha que você deseja consultar: ').capitalize()
+    print(f'{CORES["ITALICO"]}Você está consultando uma senha, deixe o nome do serviço em branco para sair... {CORES["RESET"]}')
+
+    printarServicos(cofre) # pra printar os serviços                                                                                          kk
+
+    servico = input('Digite o nome do serviço da senha que você deseja consultar: ').strip().capitalize()
     if servico == '':
         return cofre, log, False
 
@@ -168,45 +175,95 @@ def senha_consultar(cofre, log):
         print(f"\n{CORES['VERDE']}A credencial do serviço \"{servico}\" é {CORES['NEGRITO']}{cofre[servico]['credencial']}{CORES['RESET']}{CORES['VERDE']}, e sua senha é {CORES['NEGRITO']}{manipularSenha('visualizar', cofre[servico]['senha'])}{CORES['RESET']}.")
         
     else:
-        print(f"\nEsse serviço {CORES['NEGRITO']}não está no cofre{CORES['RESET']}, verifique se você o digitou certo ou se ainda não adicionou-o.")
+        print(f"\n{CORES['VERMELHO']}Esse serviço {CORES['NEGRITO']}não está no cofre{CORES['RESET']}{CORES['VERMELHO']}, verifique se você o digitou certo ou se ainda não adicionou-o.")
 
     return cofre, log, True
     
 def senha_alterar(cofre, log):
-    print(f'{CORES["ITALICO"]}Você está alterando uma senha, deixe o nome do serviço em branco para sair... {CORES["RESET"]}\n')
-    servico = input('Digite o nome do serviço da senha que você deseja alterar: ').capitalize()
+    print(f'{CORES["ITALICO"]}Você está alterando uma senha, deixe o nome do serviço em branco para sair... {CORES["RESET"]}')
+
+    printarServicos(cofre) # pra printar os serviços                                                                                          kk
+
+    servico = input(f'Digite o nome do serviço da senha que você deseja alterar: ').strip().capitalize()
     if servico == '':
         return cofre, log, False
 
     if servico in cofre:
+        cred = input(f"Digite a nova credencial (usuário, e-mail ou login) dessa senha{CORES['ITALICO']}, ou deixe em branco para manter{CORES['RESET']}: ").strip() # esse negocio fresca
+        
+        while True: 
+            senha = input(f"Digite a nova senha{CORES['ITALICO']}, ou deixe em branco para manter{CORES['RESET']}: ").strip() # todo: alguma forma de criptografia
+            if senha == '':
+                break
+            fortitude = seguranca.segura_senha(senha, senhasC)
 
-        while True:
-            novaSenha = input("Digite a nova senha: ")
-            fortitude = seguranca.segura_senha(novaSenha, senhasC)
             if fortitude == 'Média':
-                continuar = input("Deseja continuar com essa senha?(SIM/NÃO): ").upper()
+                continuar = input(f"Deseja continuar com essa senha, {CORES['ITALICO']}mesmo tendo segurança média?{CORES['RESET']} {CORES['ITALICO']}(SIM/NÃO){CORES['RESET']}: ").upper()
                 if continuar == "SIM": 
                     break
 
-                if continuar == "NÃO" or continuar == "NAO":
+                else: # se o usuario digitar "nao", ou so deixar em branco, é pra digitar de novo
                     continue
-        
+            
             if fortitude == 'Forte':
                 break
-        cofre[servico]['senha'] = manipularSenha('registrar', novaSenha)
-        cofre[servico]['registro'] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        log = csv.registrarLog(DIRETORIOS['log'], log, 'alterar', servico)
-        print(f"\n{CORES['VERDE']}A senha do serviço \"{servico}\" foi {CORES['NEGRITO']}alterada!{CORES['RESET']}")
+            
+
+        if len(categorias) > 0: # só se pode escolher uma categoria pra senha se existirem categorias, se nao tiver nenhuma por enquanto
+                print(f"\nCategorias disponíveis:{CORES['CINZA']}")
+                printarCategorias(categorias)
+                while True: # loop basiquinho pra forçar o usuário a digitar uma categoria válida, se o número não estiver no alcance, ele repete até estar
+                    categoria = input(f"{CORES['RESET']}Digite a nova categoria desejada com base na lista acima (de 1 a {len(categorias)}, {CORES['ITALICO']}ou deixe em branco para não categorizar{CORES['RESET']}): ")
+                    if categoria == '': # se o usuario nao tiver escrito nada, vamos entender que ele quis deixar a senha sem categoria.
+                        break
+                    if categoria.isdigit(): # vamos ver se o numero que o usuario digitou pode se transformar em número, se nao, nem tenta converter pra int
+                        categoria = int(categoria) - 1 # se eh um numero valido, entao converte e diminui um pra transformar o número em indice
+                        if categoria < 0 or categoria > (len(categorias) - 1): # agora validar o número ne, se ta no alcance esperado
+                            print(f'{CORES["VERMELHO"]}Categoria inválida, digite um número de 1 a {len(categorias)}.{CORES["RESET"]}') # olha aí, digite um numero de 1 até 4, por exemplo, se tiver 4 categorias
+                        else: # se tiver no alcance, para o loop porque já temos um numero valido pra categoria
+                            break
+                    else:
+                        print(f'{CORES["VERMELHO"]}Entrada inválida, digite um número VÁLIDO de 1 a {len(categorias)}.{CORES["RESET"]}')
+                if categoria == '':
+                    categoriaEscolhida = '-' # categoria vazia
+                else:
+                    categoriaEscolhida = categorias[categoria] # categoria válida
+
+        else:
+            categoriaEscolhida = '-'
+            print(f"{CORES['CINZA']}{CORES['ITALICO']}Não existe nenhuma categoria, crie uma e altere a senha novamente para atribuir este serviço à ela.{CORES['RESET']}")
+        observacao = input(f"Digite uma nova observação para essa senha {CORES['ITALICO']}(ou deixe em branco, caso não queira alterar){CORES['RESET']}: ")
+        horario = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        if observacao == '': # se nao tiver nada a ser observado
+            observacao = '-'
+        
+        if cred != "":
+            cofre[servico]['credencial'] = cred
+        if senha != "":
+            cofre[servico]['senha'] = manipularSenha('registrar', senha)
+        if categoriaEscolhida != "":
+            cofre[servico]['categoria'] = categoriaEscolhida
+        if observacao != "":
+            cofre[servico]['obs'] = observacao
+
+        if senha != "" or cred != "":
+            cofre[servico]['registro'] = horario
+            log = csv.registrarLog(DIRETORIOS['log'], log, 'alterar', servico)
 
         csv.salvarCSV(DIRETORIOS["cofre"], cofre, 'servico')
+
+        print(f"\n{CORES['VERDE']}O serviço \"{servico}\" foi {CORES['NEGRITO']}alterado!{CORES['RESET']}") # printyt kk
     else:
         print(f"\nEsse serviço {CORES['NEGRITO']}não está no cofre{CORES['RESET']}, verifique se você o digitou certo ou se ainda não adicionou-o.")
 
     return cofre, log, True
 
 def senha_apagar(cofre, log):
-    print(f'{CORES["ITALICO"]}Você está apagando uma senha, deixe o nome do serviço em branco para sair... {CORES["RESET"]}\n')
-    servico = input('Digite o nome do serviço da senha que você deseja apagar: ').capitalize()
+    print(f'{CORES["ITALICO"]}Você está apagando uma senha, deixe o nome do serviço em branco para sair... {CORES["RESET"]}')
+
+    printarServicos(cofre) # pra printar os serviços                                                                                          kk
+
+    servico = input('Digite o nome do serviço da senha que você deseja apagar: ').strip().capitalize()
     if servico == '':
         return cofre, log, False
 
@@ -296,6 +353,11 @@ def manipularSenha(acao, senha): # separei em função os atos de visualizar e c
         case _:
             raise ValueError(f'Mal uso da função de manipulação de senhas, {acao} não é uma ação válida')
 
+def printarServicos(cofre):
+    print(f"\n{CORES['CINZA']}Serviços cadastrados:")
+    for i in cofre.keys():
+        print(f"    {i}")
+    print(CORES["RESET"])
 
 # FUNÇÕES DO MENU CATEGORIA
 
@@ -313,7 +375,7 @@ def printarCategorias(categorias, mostrarIndices = True): # mostrarIndices indic
 def categoria_adicionar(categorias):
     print(f'{CORES["ITALICO"]}Você está adicionando uma categoria, deixe o nome da categoria em branco para sair... {CORES["RESET"]}\n')
     
-    novaCategoria = input("\nDigite a categoria a ser adicionada: ").capitalize()
+    novaCategoria = input("\nDigite a categoria a ser adicionada: ").capitalize().strip()
     if novaCategoria == '':
         return categorias, False
 
@@ -325,23 +387,62 @@ def categoria_adicionar(categorias):
         print(f'{CORES["VERMELHO"]}A categoria {CORES["NEGRITO"]}{novaCategoria}{CORES["RESET"]} {CORES["VERMELHO"]}já se encontra na lista de categorias!{CORES["RESET"]}')
     return categorias, True
 
-def categoria_remover(categorias):
+def categoria_renomear(categorias, cofre):
+    print(f'{CORES["ITALICO"]}Você está renomeando uma categoria, deixe o nome da categoria em branco para sair... {CORES["RESET"]}\n')
+                                
+    print(f"\nAs categorias atuais são:{CORES['CINZA']}")
+    printarCategorias(categorias, mostrarIndices=False)
+    removCategoria = input(f"{CORES['RESET']}\nDigite a categoria a ser renomeada: ").capitalize().strip()
+    if removCategoria == '':
+        return categorias, cofre, False
+
+    while True:
+        novoNomeCategoria = input(f"Digite o novo nome para a categoria: ").capitalize().strip()
+        if novoNomeCategoria:
+            break
+        print(f"{CORES['VERMELHO']}A categoria precisa ter {CORES['NEGRITO']}pelo menos um caractere!{CORES['RESET']}\n")
+
+    if removCategoria in categorias: # só renomear se existir, né
+        categorias[categorias.index(removCategoria)] = novoNomeCategoria
+        cofre = reatribuirServicosACategorias(cofre, removCategoria, novoNomeCategoria)
+
+        csv.salvarCSV(DIRETORIOS["cofre"], cofre, 'servico')
+        csv.salvarCSV(DIRETORIOS["categorias"], categorias, 'categoria')
+        print(f"\n\n{CORES['VERDE']}A categoria {CORES['NEGRITO']}{removCategoria}{CORES['RESET']} {CORES['VERDE']}foi renomeada para {CORES['NEGRITO']}{novoNomeCategoria}{CORES['RESET']}!")
+    else: # se não existir a categoria, avisar
+        print(f'{CORES["VERMELHO"]}A categoria {CORES["NEGRITO"]}{removCategoria}{CORES["RESET"]}{CORES["VERMELHO"]} não se encontra na lista de categorias!{CORES["RESET"]}')
+
+    return categorias, cofre, True
+
+def categoria_remover(categorias, cofre):
     print(f'{CORES["ITALICO"]}Você está removendo uma categoria, deixe o nome da categoria em branco para sair... {CORES["RESET"]}\n')
                                 
     print(f"\nAs categorias atuais são:{CORES['CINZA']}")
     printarCategorias(categorias, mostrarIndices=False)
-    removCategoria = input(f"{CORES['RESET']}Digite a categoria a ser removida: ").capitalize()
+    removCategoria = input(f"{CORES['RESET']}\nDigite a categoria a ser removida: ").capitalize().strip()
     if removCategoria == '':
         return categorias, False
 
     if removCategoria in categorias: # só remover se existir, né
         categorias.pop(categorias.index(removCategoria))
+        cofre = reatribuirServicosACategorias(cofre, removCategoria, '-')
+
+        csv.salvarCSV(DIRETORIOS["cofre"], cofre, 'servico')
         csv.salvarCSV(DIRETORIOS["categorias"], categorias, 'categoria')
         print(f"\n\n{CORES['VERDE']}A categoria {CORES['NEGRITO']}{removCategoria}{CORES['RESET']} {CORES['VERDE']}foi removida!")
     else: # se não existir a categoria, avisar
         print(f'{CORES["VERMELHO"]}A categoria {CORES["NEGRITO"]}{removCategoria}{CORES["RESET"]}{CORES["VERMELHO"]} não se encontra na lista de categorias!{CORES["RESET"]}')
     
     return categorias, True
+
+def reatribuirServicosACategorias(cofre, antigaCategoria, novaCategoria): # vejamos, na hora de apagar a categoria, a gente tira lá da lista de categorias, mas e os serviços que tavam atribuidos a essa categoria, essa função é pra deixar esses serviços em branco
+#                                                                           e melhor ainda, da pra fazer essa função se adaptar pra renomear as categorias, ja que se renomear, precisa reatribuir os bbdos tambem
+    for servico, dados in cofre.items(): # matheuznho, explica a função items p mim, to dementado pra explicar isso eficientemente ~tarcizo
+        if antigaCategoria == dados['categoria']: # to percorrendo todas as senhas, se esta estiver com a caegoria que eu pedi, entao troca rs
+            cofre[servico]['categoria'] = novaCategoria
+    #print(f"{CORES['ITALICO']} Senhas reatribu{CORES['ITALICO']}")  precisa mesmo de um print? parei na metade do caminho pq achei desnê
+    return cofre
+
 
 
 # FUNÇÕES DO MENU REGISTRO DE AUDITORIA
@@ -463,7 +564,7 @@ def main():
                     print(f"{CORES['ITALICO']}Você está no menu de {CORES['NEGRITO']}categorias.{CORES['RESET']}")
 
                     
-                    print(f'\n\n{CORES["NEGRITO"]}Opções:{CORES["RESET"]} \n1. Adicionar categoria\n2. Visualizar categorias\n3. Remover categoria\n0. Sair')
+                    print(f'\n\n{CORES["NEGRITO"]}Opções:{CORES["RESET"]} \n1. Adicionar categoria\n2. Remover categoria\n3. Visualizar categorias\n4. Renomear categoria\n0. Sair')
                     operacao = input('Digite o número da operação: ')
                     limparTerminal()
                     match operacao:
@@ -474,17 +575,27 @@ def main():
                             if sucesso:
                                 input(f"{CORES['RESET']}\nPressione Enter para continuar...")
                         case '2':
+                            
+                            categorias, sucesso = categoria_remover(categorias, cofre)
+                            
+                            if sucesso:
+                                input(f"{CORES['RESET']}\nPressione Enter para continuar...")
 
+                           
+                        case '3':
+                            
                             print(f"As categorias atuais são:{CORES['CINZA']}")
                             printarCategorias(categorias)
 
                             input(f"{CORES['RESET']}\nPressione Enter para continuar...")
-                        case '3':
 
-                            categorias, sucesso = categoria_remover(categorias)
-                            
+                        case '4':
+
+                            categorias, cofre, sucesso = categoria_renomear(categorias, cofre)
+                                                        
                             if sucesso:
                                 input(f"{CORES['RESET']}\nPressione Enter para continuar...")
+
                         case '0':
                             break
                         case _:
