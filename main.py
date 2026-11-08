@@ -495,7 +495,7 @@ def main():
         limparTerminal()
         print(f"{CORES['VERDE']}=== CofreSeguro ==={CORES['RESET']}")
 
-        print(f'\n\n{CORES["NEGRITO"]}Menus:{CORES["RESET"]} \n1. Senhas\n2. Categorias\n3. Registro de Auditoria\n0. Sair')
+        print(f'\n\n{CORES["NEGRITO"]}Menus:{CORES["RESET"]} \n1. Senhas\n2. Categorias\n3. Registro de Auditoria\n4. Relatório de Segurança\n0. Sair')
         menu = input("Digite o número do menu: ")
         limparTerminal()
         match menu:
@@ -621,6 +621,64 @@ def main():
                             if sucesso:
                                 input(f'{CORES["RESET"]}\nPressione Enter para continuar...')
                             
+                        case '0':
+                            break
+                        case _:
+                            input(f"Opção inválida!\nPressione Enter para tentar novamente...")
+            case '4': #relatorio de segurança
+                while True:
+                    limparTerminal()
+                    print(f"{CORES['VERDE']}=== CofreSeguro ==={CORES['RESET']}")
+                    print(f"{CORES['ITALICO']}Você está no menu do {CORES['NEGRITO']}Registro de Segurança.{CORES['RESET']}")
+                
+                                    
+                    print(f'\n\n{CORES["NEGRITO"]}Opções:{CORES["RESET"]} \n1. Situação Atual\n0. Sair')
+                    operacao = input('Digite o número da operação: ')
+                    limparTerminal()
+                    match operacao:
+
+                        case '1':
+                            total = [] # Percorre os intes de cada serviço no cofre e recolhe apenas as senhas
+                            for servico, dados in cofre.items():
+                                total.append(dados['senha'])
+
+                            senha_existente = set() # Dando uma pesquisada, descubri que o recurso "set" analisa se há elementos duplicados (conjutos), então ele vê se a senha usada já existe e adiciona no senhas_repetidas que serve meio que um contador de quantas senhas repetidas tem
+                            senha_repetida = set()  # Inclusive nos conjuntos se usa add pra adicionar tipo append com lista. Fiquei preso nessa parte pq tava justamente colocando append
+
+                            for senha in total:
+                                if senha in senha_existente:
+                                    senha_repetida.add(senha) #E Por que isso e não um contdor? Pq se digamos eu coloco 123 em 3 serviços diferentes, isso é só uma senha repetida, mas com o contador leria como 3 senhas repetidas
+                                else:
+                                    senha_existente.add(senha)
+
+                            medias = 0
+                            fortes = 0
+
+                            for senha in total: # Ele olha cada senha da lista e lê qual o tipo de caractere usando o código do seguranca.py
+                                minus = sum(1 for c in senha if c in seguranca.minus) # Soma 1 a cada caractere na senha se estiver na lista dos minúsculos e etc
+                                maius = sum(1 for c in senha if c in seguranca.maius)
+                                nums = sum(1 for c in senha if c in seguranca.nums)
+                                esp = sum(1 for c in senha if c in seguranca.especiais)
+
+                                caracteres = minus + maius + nums + esp
+
+                                if caracteres >= 10 and esp != 0 and minus != 0 and maius != 0 and nums != 0:
+                                    fortes += 1
+                                elif caracteres >= 8 and maius != 0 and nums != 0:
+                                    medias += 1
+
+                            if len(senha_existente) == 0:
+                                print('==========================================================\nNão existem credenciais cadastradas, vá criar suas senhas!\n==========================================================')
+                            else:
+                                print(f'Quantidade de credenciais no CofreSeguro: {len(cofre)}\n===========================================')
+                                print(f'Quantidade de senhas fortes: {fortes}')
+
+                                if medias >0:
+                                    print(f'{CORES['VERMELHO']}(ALERTA){CORES['RESET']} Quantidade de senhas médias: {medias}')
+                                if len(senha_repetida) >0:
+                                    print(f'{CORES['AMARELO']}(ATENÇÃO){CORES['RESET']} Quantidade de senhas repetidas: {len(senha_repetida)}')
+
+                            input(f'{CORES["RESET"]}\nPressione Enter para continuar...')
                         case '0':
                             break
                         case _:
