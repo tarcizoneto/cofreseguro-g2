@@ -48,7 +48,7 @@ maius = 'A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,Á,É,Í,Ó,Ú,À,�
 nums = '1,2,3,4,5,6,7,8,9,0'.split(",")
 especiais = '!,@,#,$,%,&,*,_,>,<,^,~,;,:,?,/,\\,-,{,},[,],\',"'.split(",")
 
-def segura_senha(senha, senhasComuns):
+def segura_senha(senha, senhasComuns, printarForca = True):
     #Importação das senhas comuns e definição dos contadores
     forca_da_senha = None
     cont_minus = 0
@@ -73,23 +73,29 @@ def segura_senha(senha, senhasComuns):
     # Checagem de força da senha
 
     if cont_caracteres <= 5:
-        print(f'{CORES["VERMELHO"]}Senha fraquíssima... Tenha mais criatividade :P{CORES["RESET"]}')
+        if printarForca:
+            print(f'{CORES["VERMELHO"]}Senha fraquíssima... Tenha mais criatividade :P{CORES["RESET"]}')
         forca_da_senha = "Fraquíssima"
     elif senha in senhasComuns:
-        print(f'{CORES["VERMELHO"]}Esta é uma senha {CORES["NEGRITO"]}extremamente comum.{CORES["RESET"]}{CORES["VERMELHO"]} Tente outra!{CORES["RESET"]}')
+        if printarForca:
+            print(f'{CORES["VERMELHO"]}Esta é uma senha {CORES["NEGRITO"]}extremamente comum.{CORES["RESET"]}{CORES["VERMELHO"]} Tente outra!{CORES["RESET"]}')
         forca_da_senha = "Fraquíssima"
     elif cont_caracteres >= 10 and cont_esp != 0 and cont_minus != 0 and cont_maius != 0 and cont_nums != 0:
-        print(f'{CORES["VERDE"]}Senha forte o suficiente!{CORES["RESET"]}')
+        if printarForca:
+            print(f'{CORES["VERDE"]}Senha forte o suficiente!{CORES["RESET"]}')
         forca_da_senha = "Forte"
     elif cont_caracteres >= 8 and cont_maius != 0 and cont_nums != 0:
-        print(f'{CORES["AMARELO"]}Senha média. Recomenda-se uma mais forte!{CORES["RESET"]}')
+        if printarForca:
+            print(f'{CORES["AMARELO"]}Senha média. Recomenda-se uma mais forte!{CORES["RESET"]}')
         forca_da_senha = "Média"
     else:
-        print(f'{CORES["VERMELHO"]}Senha fraca. Tente uma senha mais forte!{CORES["RESET"]}')
+        if printarForca:
+            print(f'{CORES["VERMELHO"]}Senha fraca. Tente uma senha mais forte!{CORES["RESET"]}')
         forca_da_senha = "Fraca"
 
-    if forca_da_senha == 'Fraquíssima' or forca_da_senha == 'Fraca' or forca_da_senha == 'Média':
-        verificar = input(f"Gostaria de verificar as condições que {CORES['NEGRITO']}fortificam a senha? {CORES['RESET']}{CORES['ITALICO']}(SIM/NÃO){CORES['RESET']}: ").upper()
+    if printarForca:        
+        if forca_da_senha == 'Fraquíssima' or forca_da_senha == 'Fraca' or forca_da_senha == 'Média':
+            verificar = input(f"Gostaria de verificar as condições que {CORES['NEGRITO']}fortificam a senha? {CORES['RESET']}{CORES['ITALICO']}(SIM/NÃO){CORES['RESET']}: ").upper()
     
 
         if verificar == "SIM":
