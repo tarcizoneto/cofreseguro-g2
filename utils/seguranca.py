@@ -16,6 +16,7 @@
 import os
 import csv
 from datetime import datetime
+import random
 
 CORES = {
     "RESET": "\033[0m",
@@ -42,10 +43,10 @@ CORES = {
 
 # Separação dos caracteres em strigs 
 
-minus = 'a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z'.split(",")
-maius = 'A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z'.split(",")
+minus = 'a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,á,é,í,ó,ú,à,è,ì,ò,ù,â,ê,ô,û,ã,õ,ñ,ç'.split(",")
+maius = 'A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,Á,É,Í,Ó,Ú,À,È,Ì,Ò,Ù,Â,Ê,Ô,Û,Ã,Õ,Ñ,Ç'.split(",")
 nums = '1,2,3,4,5,6,7,8,9,0'.split(",")
-especiais = '!,@,#,$,%,&,*,_'.split(",")
+especiais = '!,@,#,$,%,&,*,_,>,<,^,~,;,:,?,/,\\,-,{,},[,],\',"'.split(",")
 
 def segura_senha(senha, senhasComuns):
     #Importação das senhas comuns e definição dos contadores
@@ -111,7 +112,7 @@ def segura_senha(senha, senhasComuns):
 
 
     if forca_da_senha == 'Fraquíssima' or forca_da_senha == 'Fraca' or forca_da_senha == 'Média':
-        verificar = input("Gostaria de verificar as condições que fortificam a senha? (SIM/NÃO): ").upper()
+        verificar = input(f"Gostaria de verificar as condições que {CORES['NEGRITO']}fortificam a senha? {CORES['RESET']}{CORES['ITALICO']}(SIM/NÃO){CORES['RESET']}: ").upper()
     
 
         if verificar == "SIM":
