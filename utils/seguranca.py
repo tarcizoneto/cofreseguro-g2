@@ -75,8 +75,8 @@ def segura_senha(senha, senhasComuns, printarForca = True):
         if caracteres in especiais:
             cont_esp += 1
 
-    print(cont_difs)
-    print(cont_reps)
+    # print(cont_difs)
+    # print(cont_reps)
 
     # Soma dos caracteres após a contagem
     cont_caracteres = len(senha)
