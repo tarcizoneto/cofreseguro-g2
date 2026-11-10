@@ -86,6 +86,8 @@ def limparTerminal(): # a merda do windows quer ser diferentão e usar "cls" pra
 # FUNÇÕES DO MENU SENHA
 
 def senha_adicionar(cofre, log):
+    tentativasSenhasFortes = 0
+
     print(f'{CORES["ITALICO"]}Você está adicionando uma senha, deixe o nome do serviço em branco para sair... {CORES["RESET"]}\n') # uma ótima funcionalidade é pra que, caso o usuario queira sair e não quer realmente adicionar uma senha, só precisa deixar em branco
     servico = input('Digite o nome de serviço no qual essa senha está sendo usada: ').strip().capitalize()
     if servico == '': # o programa vê se ta em branco, e se tiver, é porque o usuario quer sair
@@ -101,8 +103,11 @@ def senha_adicionar(cofre, log):
         print(f"{CORES['VERMELHO']}A credencial precisa ter {CORES['NEGRITO']}pelo menos um caractere!{CORES['RESET']}\n")
 
 
-    while True: 
-        senha = input("Digite a senha: ").strip() # todo: alguma forma de criptografia
+    while True:
+        if tentativasSenhasFortes < 1: # só pra o usuario saber se é a primeira vez dele tentando, se nao for, vai pedir uma "senha mais forte"
+            senha = input("Digite a senha: ").strip() # todo: alguma forma de criptografia
+        else:
+             senha = input("Digite uma senha mais forte: ").strip()
         fortitude = seguranca.segura_senha(senha, senhasC)
 
         if fortitude == 'Média':
@@ -111,6 +116,7 @@ def senha_adicionar(cofre, log):
                 break
 
             else: # se o usuario digitar "nao", ou so deixar em branco, é pra digitar de novo
+                tentativasSenhasFortes += 1
                 continue
         
         if fortitude == 'Forte':
@@ -669,9 +675,9 @@ def main():
                                 print(f'Quantidade de senhas fortes: {fortes}')
 
                                 if medias >0:
-                                    print(f'{CORES['VERMELHO']}(ALERTA){CORES['RESET']} Quantidade de senhas médias: {medias}')
+                                    print(f"{CORES['VERMELHO']}(ALERTA){CORES['RESET']} Quantidade de senhas médias: {medias}")
                                 if len(senha_repetida) >0:
-                                    print(f'{CORES['AMARELO']}(ATENÇÃO){CORES['RESET']} Quantidade de senhas repetidas: {len(senha_repetida)}')
+                                    print(f"{CORES['AMARELO']}(ATENÇÃO){CORES['RESET']} Quantidade de senhas repetidas: {len(senha_repetida)}")
 
                             input(f'{CORES["RESET"]}\nPressione Enter para continuar...')
                         case '0':
