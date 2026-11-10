@@ -177,7 +177,7 @@ pyrightconfig.json
 
 
 # Carol pediu pra não enviar os CSVs e o log no .gitignore
-*.env
+*.csv
 
 # mas a gente precisa das senhas comuns né
 !senhasComuns.csv
