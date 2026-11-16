@@ -169,3 +169,28 @@ def segura_senha(senha, senhasComuns, printarForca = True):
 
     return forca_da_senha
 
+#Biblioteca reservada pra detecção de risco
+
+# Função para detectar risco de reutilização de senhas
+def verificar_senhas_repetidas(senha, cofre):
+
+    # Lista de serviços com senhas repetidas
+    servSenhasRepet = []
+
+    # Percorre os serviços cadastrados no cofre anteriormente (exemplo shopee,reddit..)
+    for servico,dados in cofre.items():
+
+        # acessa a senha armazenada no serviço
+        senhaSalva = cofre[servico]['senha']
+
+        # Adiciona o serviço da senha repetida na lista
+        if senha == senhaSalva:
+            servSenhasRepet.append(servico)
+
+    if len(servSenhasRepet) != 0:
+        print(f"\n{CORES["NEGRITO"]}{CORES["VERMELHO"]}RISCO IDENTIFICADO{CORES["RESET"]}")
+        print(f"Essa senha já está sendo utilizada em {CORES["NEGRITO"]}{CORES["VERMELHO"]}{len(servSenhasRepet)}{CORES["RESET"]} Serviços: {CORES["AMARELO"]}{servSenhasRepet}{CORES["RESET"]}")
+        print(f"{CORES["ITALICO"]}Considere trocar senhas repetidas para mais segurança!!!{CORES["RESET"]}\n")
+        return True
+    # caso termine o laço sem encontrar repetição
+    return False

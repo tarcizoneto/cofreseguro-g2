@@ -1,6 +1,5 @@
 import os
 from utils import csv
-from utils import deteccaoDeRisco
 from datetime import datetime
 from utils import seguranca
 
@@ -107,11 +106,11 @@ def senha_adicionar(cofre, log):
         if tentativasSenhasFortes < 1: # só pra o usuario saber se é a primeira vez dele tentando, se nao for, vai pedir uma "senha mais forte"
             senha = input("Digite a senha: ").strip() # todo: alguma forma de criptografia
         else:
-             senha = input("Digite uma senha mais forte: ").strip()
+            senha = input("Digite uma senha mais forte: ").strip()
         fortitude = seguranca.segura_senha(senha, senhasC)
-        if deteccaoDeRisco.verificarSenhasRepetidas(senha,cofre):
-            print("Digite uma senha diferente, essa já foi utilizada em outro serviço")
-            continue
+
+        seguranca.verificar_senhas_repetidas(senha,cofre)
+
         if fortitude == 'Média':
             continuar = input(f"Deseja continuar com essa senha, {CORES['ITALICO']}mesmo tendo segurança média?{CORES['RESET']} {CORES['ITALICO']}(SIM/NÃO){CORES['RESET']}: ").upper()
             if continuar == "SIM": 
@@ -160,11 +159,14 @@ def senha_adicionar(cofre, log):
             'registro': horario,
             'obs': observacao
         }
-    
+
+    # registar no log e salvar
+    csv.salvarCSV(DIRETORIOS["cofre"], cofre, 'servico')
+    log = csv.registrarLog(DIRETORIOS['log'], log, 'adicionar', servico)
 
     print(f"\n\n{CORES['VERDE']}Senha do serviço {CORES['NEGRITO']}{servico}{CORES['RESET']} {CORES['VERDE']}adicionada com sucesso!{CORES['RESET']}")
     return cofre, log, True
-                                
+
 def senha_consultar(cofre, log):
     print(f'{CORES["ITALICO"]}Você está consultando uma senha, deixe o nome do serviço em branco para sair... {CORES["RESET"]}')
 
@@ -200,6 +202,8 @@ def senha_alterar(cofre, log):
             if senha == '':
                 break
             fortitude = seguranca.segura_senha(senha, senhasC)
+
+            seguranca.verificar_senhas_repetidas(senha,cofre)
 
             if fortitude == 'Média':
                 continuar = input(f"Deseja continuar com essa senha, {CORES['ITALICO']}mesmo tendo segurança média?{CORES['RESET']} {CORES['ITALICO']}(SIM/NÃO){CORES['RESET']}: ").upper()
@@ -366,8 +370,7 @@ def printarServicos(cofre):
 # FUNÇÕES DO MENU CATEGORIA
 
 def printarCategorias(categorias, mostrarIndices = True): # mostrarIndices indica se o programa quer que mostre os índices ou não, no caso de remover categoria, onde o usuario digita o nome inteiro
-                                                          # não precisa mostrar os indices (1. Jogos), esse numeroiznhho aí
-    if len(categorias) != 0:
+    if len(categorias) != 0:                              # não precisa mostrar os indices (1. Jogos), esse numerozinho aí
         for i in range(len(categorias)):
             if mostrarIndices:
                 print(f"{i+1}. {categorias[i]}")
@@ -519,7 +522,7 @@ def main():
                         case '1':
 
                             cofre, log, sucesso = senha_adicionar(cofre, log)
-                           
+
                             if sucesso:
                                 input("\nPressione Enter para continuar...")
                         case '2':
@@ -585,7 +588,6 @@ def main():
                             if sucesso:
                                 input(f"{CORES['RESET']}\nPressione Enter para continuar...")
 
-                           
                         case '3':
                             
                             print(f"As categorias atuais são:{CORES['CINZA']}")
@@ -687,7 +689,6 @@ def main():
                 break
             case _:
                 input(f"Opção inválida!\nPressione Enter para tentar novamente...")
-                
 
 
 if __name__ == "__main__":
