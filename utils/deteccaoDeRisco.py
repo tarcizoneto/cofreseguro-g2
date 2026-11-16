@@ -11,7 +11,7 @@ def verificarSenhasRepetidas(senha, cofre):
         # compara a senha digitada com a senha cadastrada
         if senha == senhaSalva:
 
-            print(f"Risco identificado! Essa senha já está sendo utilizada no serviço {servico}.")
+            print(f"Risco identificado! Essa senha já está sendo utilizada no serviço a seguir {servico}..")
 
             return True
 
