@@ -1,5 +1,6 @@
 import os
 from utils import csv
+from deteccaoDeRisco import verificar_senhas_iguais
 from datetime import datetime
 from utils import seguranca
 
@@ -102,7 +103,7 @@ def senha_adicionar(cofre, log):
         # se estiver vazia, o loop continua e printa esse aviso aqui embaixo
         print(f"{CORES['VERMELHO']}A credencial precisa ter {CORES['NEGRITO']}pelo menos um caractere!{CORES['RESET']}\n")
 
-
+    senha=null  #colocando a variavel num escopo maior
     while True:
         if tentativasSenhasFortes < 1: # só pra o usuario saber se é a primeira vez dele tentando, se nao for, vai pedir uma "senha mais forte"
             senha = input("Digite a senha: ").strip() # todo: alguma forma de criptografia
@@ -161,6 +162,9 @@ def senha_adicionar(cofre, log):
     
     # registar no log
     # salvar
+    if verificar_senhas_iguais(senha): #false para não cadastrar a senha digitada
+        print("digite uma senha diferente, essa já foi utilizada em outro serviço")
+        return (cofre, log, False)
     csv.salvarCSV(DIRETORIOS["cofre"], cofre, 'servico')
     log = csv.registrarLog(DIRETORIOS['log'], log, 'adicionar', servico)
 
