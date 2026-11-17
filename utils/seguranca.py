@@ -389,8 +389,10 @@ def descriptografar_senha(sal, senhaCriptografada):
 
 
 
-sal, senha = criptografar_senha('CatimbalDoParafuso1245@%#%$@$fs', 100)
+sal, senha = criptografar_senha('CatimbalDoParafuso1245@%#%$@$fs', 5)
 
 print('sSENHA DESCRIPOGROAFADADA:  '+descriptografar_senha(sal, senha))
 print(f"SENHA CRIPTOGRAFADA: ", senha)
 print(f'SAL USADO: '+sal)
+
+# quando tem por exemplo, 13 caracteres e a matriz só cobre 12, um fica de fora, fazer com que o alcance 9linahas e colunas cubra até o excedente
