@@ -17,6 +17,7 @@ import os
 import csv
 from datetime import datetime
 import random
+import secrets
 
 CORES = {
     "RESET": "\033[0m",
@@ -194,3 +195,35 @@ def verificar_senhas_repetidas(senha, cofre):
         return True
     # caso termine o laço sem encontrar repetição
     return False
+
+
+def gerar_senha(tamanho=12): #definição do tamanho ao colocar uma senha
+    while True:
+        if tamanho < 12:
+            print(f"\n===============================================\n")
+            raise ValueError("O tamanho recomendado é 12 caracteres.") #nega a inserção da senha ao colocar menos do que 5 caracteres
+            
+        #garante pelo menos um caractere de cada tipo da lista feita
+        senhas = [secrets.choice(minus),
+                secrets.choice(maius),
+                secrets.choice(nums),
+                secrets.choice(especiais)
+        ]
+        #Preenche o restante da senha aleatoriamente
+        todos_caracteres = minus + maius + nums + especiais
+        senhas += [secrets.choice(todos_caracteres)for _ in range(tamanho - 5)]
+
+        #Embaralha e gera uma senha na lista de modo aleatório
+        secrets.SystemRandom().shuffle(senhas)
+
+        nova_senha = "".join(senhas)
+
+        
+        if segura_senha(nova_senha, [], False) == 'Forte':
+            break
+        else:
+            print("Senha insegura gerada: ", nova_senha)
+        
+    print("Senha gerada:", nova_senha)
+
+
