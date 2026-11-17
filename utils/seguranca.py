@@ -201,7 +201,7 @@ def gerar_senha(tamanho=12): #definição do tamanho ao colocar uma senha
     while True:
         if tamanho < 12:
             print(f"\n===============================================\n")
-            raise ValueError("O tamanho recomendado é 12 caracteres.") #nega a inserção da senha ao colocar menos do que 5 caracteres
+            raise ValueError("O tamanho recomendado é 12 caracteres.") #nega a inserção da senha ao colocar menos do que 12 caracteres
             
         #garante pelo menos um caractere de cada tipo da lista feita
         senhas = [secrets.choice(minus),
