@@ -1,4 +1,4 @@
- **COFRESEGURO🔐 Grupo 2:**
+ **COFRESEGURO Grupo 2:**
 
  # <span style="color: Orange; ">*Manual do usuário:</span>*
 
@@ -44,15 +44,73 @@ Menu de senhas:
 0. Sair
 
 ```
-## <span style="color: salmon;">Níveis:</span> 
+## Detecção de reutilização
 
-|  Fraca:
-
-|  Média:
-
-|  Forte:
-### Detecção de reutilização
-
-Se a mesma senha aparece em mais de um serviço, o sistema lista todos eles.
+Se a mesma senha aparece em mais de um serviço, o sistema mostra a quantidade e lista o nome desses serviços com a mesma senha, além de recomendar a troca de senhas.
 Isso importa porque, se um serviço vazar, **todos os outros que compartilham
-a senha ficam expostos**. 
+a mesma senha ficam vulneráveis**. 
+
+## <span style="color:LightBlue;">Gerador de senhas:</span>
+
+#### O sistema funciona como um gerador aleatório de recomendação para a força de senha com o objetivo de selecionar uma criptografia segura para os diversos tipos de serviços que o usuário quiser inserir suas senhas
+
+  ## 1.1 - Instruções de utilização:
+
+  1 - Inicie o main.py com python3 para iniciar o programa
+
+  2 - Selecione o menu desejado para começar as ações
+
+  3 - Selecione a ação à ser feita em cada menu
+
+  4 - Preencha os dados na ação selecionada
+
+  5 - O sistema armazenará as informações cadastradas 
+  
+  6 - Pressione **Enter** para sair da ação
+
+  ## 1.2 - Adição de senhas:
+O sistema, ao criar uma senha o sistema pede 5 informações principais que são
+- **O serviço desejado**
+- **A credencial/Usuário do serviço**
+- **A senha de modo geral**
+- **A Categoria em que o serviço se  enquadra**
+- **Uma observação opcional**
+
+*Logo após inserir as informações as informações serão armazenadas no `cofre.csv`*
+
+## <span style="color: salmon;"> Verificador de níveis de senha:</span> 
+
+## Forte: ---> 
+Pelo menos 10 caracteres, conter caracteres especiais, letras minusculas e maiusculas, numeros e mais de 8 caracteres diferentes e menos de 10 caracteres iguais.
+## Média: --->
+Pelo menos 8 caracteres, conter caracteres maiusculos, minusculos e numeros com pelo menos 5 caracteres diferentes.
+## Fraca: --->
+Todas as senhas que não seguem as condições acima.
+## Fraquissima: -->
+Todas as senhas dentro do nosso acervo de senhas comuns e senhas com até 5 caracteres.
+
+ ## 1.3 - Consulta de senhas:
+  Após inserir a senha no serviço desejado o sistema verificará a senha e irá mostrar o usuário se ele deseja visualizar a senha caso a tenha a esquecido.
+
+ 1 -  O sistema vai deslocar o usuário para uma seleção de serviços 
+
+2 - O sistema vai no dicionário do cofre buscar a senha do serviço.
+
+3 - O sistema irá mostrar a senha específica do serviço desejado
+
+## 1.4 - Alteração de senhas:
+Após a consulta de senhas mostrar os serviços o sistema irá perguntar se deseja atualizar a senha de determinado serviço.
+
+1 - O sistema vai deslocar para o menu de senhas. 
+
+2 - O sistema vai perguntar se deseja atualizar a senha.
+
+3 - Clique em **Editar** senha.
+
+
+
+
+
+
+
+
