@@ -6,9 +6,71 @@
 # isto é, dentro de algum valor, mais provavelmente na observação, tem uma virgula que não determina um novo valor,
 # mas sim, uma virgula usual, como a de gramática
 # é preciso se atentar a isso porque o esquema de ler os csv é justamente dar o split em virgulas
-#Trabalho para tia lily e tio luci
+
+
+
 from datetime import datetime
 import os
+
+
+def quebrarLinhacomVirgulasFalsas(linha): 
+    dados = [''] # ja deixar o primeiro indice inicializado
+    indiceAtualDados = 0
+
+
+    # variaveis de acontecimentos
+    if linha[0] != '"': # se a linha nao começar com aspas, é pra ja começar o for lendo alguma variável
+        lendoVariavel = True
+    else:
+        lendoVariavel = False
+    ignorandoVirgulas = False  
+    ignorandoAspas = False
+    
+    for idxCaractere in range(len(linha)): # ler caractere por caractere e ir adicionando toda vez que acharmos um valor
+#                                            acredito  que tenha um jeito mais fácil de fazer isso, se tiver, me avisem
+        
+        caractere = linha[idxCaractere]
+
+
+        match caractere:
+            case '"':
+                if ignorandoAspas:
+                    ignorandoAspas = False
+                    dados[indiceAtualDados] += '"' # precisamos de todo jeito adicionar as aspas, ja que foi ignorada ESTRUTURALMENTE, e não como parte da string
+                else:
+                    if not ignorandoVirgulas: # se nao tiver com uma variavel aberta
+                        ignorandoVirgulas = True # agora, qualquer virgula (que agora tao dentro de uma variavel) precisa ser ignorada
+                    else:
+                        ignorandoVirgulas = False # e se tiver com a variavel aberta (ignorando virgulas), eh pq nao precisa mais ignorar, a variavel acabou
+
+                
+            case ',':
+                if ignorandoVirgulas: 
+                    dados[indiceAtualDados] += ',' # precisamos de todo jeito adicionar as virgulas, ja que foi ignorada ESTRUTURALMENTE, e não como parte da string
+                else:
+                    indiceAtualDados += 1
+                    dados.append('')
+                    # if linha[idxCaractere+1] == '"': # ver se o prpoximo faractere eh uma aspa pra saber se vai abrir uma coisa diferente
+                    #     ignorandoVirgulas = True
+
+            case '\\':
+                ignorandoAspas = True # isso aqui >>\"<< eh quando vai ter uma aspas dentro da variavel, por exemplo uma senha que usa aspas como caractere especial
+            case _: # se o caractere nao for sobre nada de estrutura, adicionar como um caractere na variavel que ta lendo agora, ne
+                if lendoVariavel:
+                    dados[indiceAtualDados] += caractere
+                
+    print(dados)
+    return dados
+
+def formatarValorCSV(chave:str): # criei essa função pra toda vez que for salvar chave/valor no csv, essa belezinha vai e
+#                                    verifica se tem algum caracter especial que possa quebrar a leitura, se tiver, ajusta a chave e retorna ela bonitinha
+    if '"' in chave:
+        chave = chave.replace('"', '\\"')
+    if ',' in chave:
+        chave = f'"{chave}"'
+
+    return chave
+
 
 def carregarCSV(qual, ehLista = False):
     data = {}
@@ -23,7 +85,16 @@ def carregarCSV(qual, ehLista = False):
                 if csv[-1] == '\n': # se tiver a merda de uma quebra de linha sobrando no csv, essa função quebra e faz tudo se tornar uma lista vazia...
                     csv = csv[0:-1]
                 for linha in csv.split('\n'):
-                    dados = linha.split(',')
+
+                    if linha.count('"') >= 2: # se tiver mais de duas aspas (mais de uma, porque pode se ter uma aspa dentro do valor) numa linha, quer dizer que vai ter alguma variável com vírgula, 
+#                                               e essa virgula não é pra separar valores, mas sim uma virgula dentro de um valor,
+#                                               por isso que precisa dividir de outro jeito, se usássemos split ia separar por vírgulas
+#                                               inclusive a virgula que nao era pra ser dividida.
+                        dados = quebrarLinhacomVirgulasFalsas(linha)
+                        
+                    else: # se nao tiver nenhuma virgula que vai quebrar erroneamente, isto é, não tiver mais de duas aspas (que indicam valores com virgulas dentro), pode dar split normalmente
+                        dados = linha.split(',') # dividir a linha em valores. no csv, o valor eh separado por virgulas
+
                     if estaLendoChaves:
                         chaves = dados
                         estaLendoChaves = False
@@ -37,6 +108,9 @@ def carregarCSV(qual, ehLista = False):
                                 # o primeiro indice é o nome do serviço, ele quem vai ser usado pra resgatar os outros dados (senha, categoria)
 
                                 # já os outros indices equivalem cada um a suas chaves, isso sao justamente as colunas do csv. por isso o [chaves[i]]
+
+                                # if dados[i][0] == '"' and dados[i][-1] == '"': 
+
                                 if ehLista:
                                     if i == 0:
                                         dataL.append({}) # inicializar um novo dicionario pra guardar o dados dessa linha, ja que nesse caso, é disposto por dicionarios em uma lista
@@ -72,9 +146,9 @@ def salvarCSV(onde,data: dict,chavePai=None): # essa função se baseia muito na
 
             csv.write('\n') 
             for valorPrin, dados in data.items(): # agora sim guardar os dados
-                csv.write(valorPrin) # escrever o valor que no dicionario é a chave pai, no exemplo do login, o nome do serviço é quem se refere ao dicionario de dados, por isso ele fica separado da variavel dados
+                csv.write(formatarValorCSV(valorPrin)) # escrever o valor que no dicionario é a chave pai, no exemplo do login, o nome do serviço é quem se refere ao dicionario de dados, por isso ele fica separado da variavel dados
                 for chave in chaves:
-                    csv.write(','+dados[chave])
+                    csv.write(','+formatarValorCSV(dados[chave]))
                 csv.write('\n')
 
         elif type(data) == list: # no caso do log, nao precisamos de uma chave pai, já que o registro são varios dicionarios em uma lista só, sem uma chave principal para referencia-los
@@ -84,24 +158,25 @@ def salvarCSV(onde,data: dict,chavePai=None): # essa função se baseia muito na
                 for dado in data:
                     csv.write(dado)
                     csv.write('\n')
-            else:
+            else: # se for uma lista simples, como o log, sem chave pai
 
-                for chave in data[0].keys(): # matheuzinho, espero que tu entenda o resto e comente pra mim !!
+                for chave in data[0].keys(): # matheuzinho, espero que tu entenda o resto e comente pra mim !! ... nem eu (tarcizo) lembro
                     chaves.append(chave)
                     
-                    if chave == list(data[0].keys())[0]:
+                    if chave == list(data[0].keys())[0]: # só pra deixar o ritmo do write + ",chave"  por isso a gente vê a primeira e não escreve a virgula de separação, ja que eh a primeira
                         csv.write(f"{chave}")    
                         continue
-                    csv.write(f",{chave}")
+                    csv.write(f",{chave}") # e daqui em diante, pode seguir dando ,chave
 
                 csv.write('\n') 
                 for dados in data:
                     for chave in chaves:
                         if chave == chaves[0]:
-                            csv.write(dados[chave])
+                            csv.write(formatarValorCSV(dados[chave]))
                             continue
-                        csv.write(','+dados[chave])
+                        csv.write(','+formatarValorCSV(dados[chave]))
                     csv.write('\n')
+
 
 
 
@@ -135,3 +210,4 @@ def registrarLog(onde, log:list, operacao,oqueMudou):
     salvarCSV(onde, log)
     print(f'\n\033[3m\033[90mAtualização no Registro de Auditoria: {alteracoes}\033[0m')
     return log
+

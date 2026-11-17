@@ -189,9 +189,9 @@ def verificar_senhas_repetidas(senha, cofre):
             servSenhasRepet.append(servico)
 
     if len(servSenhasRepet) != 0:
-        print(f"\n{CORES["NEGRITO"]}{CORES["VERMELHO"]}RISCO IDENTIFICADO{CORES["RESET"]}")
-        print(f"Essa senha já está sendo utilizada em {CORES["NEGRITO"]}{CORES["VERMELHO"]}{len(servSenhasRepet)}{CORES["RESET"]} Serviços: {CORES["AMARELO"]}{servSenhasRepet}{CORES["RESET"]}")
-        print(f"{CORES["ITALICO"]}Considere trocar senhas repetidas para mais segurança!!!{CORES["RESET"]}\n")
+        print(f'\n{CORES["NEGRITO"]}{CORES["VERMELHO"]}RISCO IDENTIFICADO{CORES["RESET"]}')
+        print(f'Essa senha já está sendo utilizada em {CORES["NEGRITO"]}{CORES["VERMELHO"]}{len(servSenhasRepet)}{CORES["RESET"]} Serviços: {CORES["AMARELO"]}{servSenhasRepet}{CORES["RESET"]}')
+        print(f'{CORES["ITALICO"]}Considere trocar senhas repetidas para mais segurança!!!{CORES["RESET"]}\n')
         return True
     # caso termine o laço sem encontrar repetição
     return False
@@ -227,3 +227,170 @@ def gerar_senha(tamanho=12): #definição do tamanho ao colocar uma senha
     print("Senha gerada:", nova_senha)
 
 
+# feito com tarcizo e matheuzinho - ideia princiapl foi de matheus
+
+def criptografar_senha(senha, repeticoes):
+    qtdLinhas = int(-(-(len(senha)**0.5)//1))
+    qtdColunas = int(len(senha)**0.5)
+    print(f'linhas: {qtdLinhas}, colunas: {qtdColunas}')
+
+    matriz = []
+    for linha in range(qtdLinhas):
+        matriz.append([])
+        for coluna in range(qtdColunas):
+            indiceCaractereAtual = linha*qtdColunas + coluna
+            if indiceCaractereAtual < len(senha):
+                matriz[linha].append(senha[indiceCaractereAtual])
+            else:
+                matriz[linha].append('fs')
+
+    sal = ""
+    for linha in range(qtdLinhas):
+        for coluna in range(qtdColunas):
+            print(matriz[linha][coluna], end=' ')
+        print('')
+
+    for i in range(repeticoes):
+        linhaOUcoluna = random.randint(0,1)
+        print(linhaOUcoluna)
+        if linhaOUcoluna == 0:
+            linhaComeco = random.randint(0,qtdLinhas-1)
+            while True:
+                linhaFim = random.randint(0,qtdLinhas-1)
+                if linhaFim != linhaComeco:
+                    break
+            print(f'Linha {linhaComeco} vai pra linha {linhaFim}')
+            linha1 = matriz[linhaComeco]
+            linha2 = matriz[linhaFim]
+            matriz[linhaComeco] = linha2
+            matriz[linhaFim] = linha1
+            sal = str(linhaOUcoluna) + str(linhaFim) + str(linhaComeco) + sal
+        else:
+            colunaComeco = random.randint(0,qtdColunas-1)
+            while True:
+                colunaFim = random.randint(0,qtdColunas-1)
+                if colunaFim != colunaComeco:
+                    break
+            
+            print(f'Coluna {colunaComeco} vai para coluna {colunaFim}')
+            listaColunaComeco = []
+            listaColunaFim = []
+            for linha in range(qtdLinhas): # primeiro guardar os valores pra depois trocar
+                for coluna in range(qtdColunas):
+                    if coluna == colunaComeco:
+                        listaColunaComeco.append(matriz[linha][coluna])
+                    elif coluna == colunaFim:
+                        listaColunaFim.append(matriz[linha][coluna])
+
+            for linha in range(qtdLinhas):
+                matriz[linha][colunaComeco] = listaColunaFim[linha]
+                matriz[linha][colunaFim] = listaColunaComeco[linha]
+            
+            sal = str(linhaOUcoluna) + str(colunaFim) + str(colunaComeco) + sal
+
+        for linha in range(qtdLinhas):
+                for coluna in range(qtdColunas):
+                    print(matriz[linha][coluna], end=' ')
+                print('')
+
+
+        senhaNova = ''
+
+        for linha in range(qtdLinhas):
+            for coluna in range(qtdColunas):
+                senhaNova += matriz[linha][coluna] + '¨'
+        senhaNova = senhaNova[0:-1]
+
+        print(sal)
+        print(senhaNova)
+    return sal, senhaNova
+        
+
+def descriptografar_senha(sal, senhaCriptografada):
+    senha = senhaCriptografada.split('¨')
+    print(senha)
+    
+    qtdLinhas = int(-(-(len(senha)**0.5)//1))
+    qtdColunas = int(len(senha)**0.5)
+    print(f'linhas: {qtdLinhas}, colunas: {qtdColunas}')
+
+    matriz = []
+    for linha in range(qtdLinhas):
+        matriz.append([])
+        for coluna in range(qtdColunas):
+            indiceCaractereAtual = linha*qtdColunas + coluna
+            matriz[linha].append(senha[indiceCaractereAtual])
+
+
+    for linha in range(qtdLinhas):
+        for coluna in range(qtdColunas):
+            print(matriz[linha][coluna], end=' ')
+        print('')
+    for i in range(int(len(sal)/3)):
+
+        linhaOUcoluna = int(sal[i*3])
+
+        if linhaOUcoluna == 0:
+            linhaComeco = int(sal[i*3+1])
+            linhaFim = int(sal[i*3+2])
+
+
+            print(f'Linha {linhaComeco} vai pra linha {linhaFim}')
+            linha1 = matriz[linhaComeco]
+            linha2 = matriz[linhaFim]
+            matriz[linhaComeco] = linha2
+            matriz[linhaFim] = linha1
+        else:
+            colunaComeco = int(sal[i*3+1])
+            colunaFim = int(sal[i*3+2])
+            
+            print(f'Coluna {colunaComeco} vai para coluna {colunaFim}')
+            listaColunaComeco = []
+            listaColunaFim = []
+            for linha in range(qtdLinhas): # primeiro guardar os valores pra depois trocar
+                for coluna in range(qtdColunas):
+                    if coluna == colunaComeco:
+                        listaColunaComeco.append(matriz[linha][coluna])
+                    elif coluna == colunaFim:
+                        listaColunaFim.append(matriz[linha][coluna])
+
+            for linha in range(qtdLinhas):
+                matriz[linha][colunaComeco] = listaColunaFim[linha]
+                
+                matriz[linha][colunaFim] = listaColunaComeco[linha]
+            
+
+        for linha in range(qtdLinhas):
+                for coluna in range(qtdColunas):
+                    print(matriz[linha][coluna], end=' ')
+                print('')
+
+
+        senhaDes = ''
+
+        for linha in range(qtdLinhas):
+            for coluna in range(qtdColunas):
+                if matriz[linha][coluna] != 'fs':
+                    senhaDes += matriz[linha][coluna]
+
+    return senhaDes
+        
+
+
+
+
+# matriz = [
+#     [1, 2, 3, 4],
+#     [5, 6, 7, 8],
+#     [9, 10, 11, 12],
+#     [13, 14, 15, 16]
+# ]
+# senha = 123456789
+
+
+
+sal, senha = criptografar_senha('CatimbalDoParafuso1245@%#%$@$fs', 100)
+
+print('sSENHA DESCRIPOGROAFADADA:  '+descriptografar_senha(sal, senha))
+print(f"SENHA CRIPTOGRAFADA: ", senha)
+print(f'SAL USADO: '+sal)
