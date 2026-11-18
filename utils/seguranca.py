@@ -230,10 +230,14 @@ def gerar_senha(tamanho=12): #definição do tamanho ao colocar uma senha
 
 # feito com matheuzinho e tarcizo - ideia de como executar foi de matheuzinho, puxem palmas p ele porfa
 
+debug = False
+
+
 def criptografar_senha(senha, repeticoes):
     qtdLinhas = int(-(-(len(senha)**0.5)//1))
     qtdColunas = int(-(-(len(senha)**0.5)//1))
-    # print(f'linhas: {qtdLinhas}, colunas: {qtdColunas}')
+    if debug:
+        print(f'linhas: {qtdLinhas}, colunas: {qtdColunas}')
 
     matriz = []
     for linha in range(qtdLinhas):
@@ -246,10 +250,11 @@ def criptografar_senha(senha, repeticoes):
                 matriz[linha].append(f'{secrets.choice(tudo)}{secrets.choice(tudo)}')
 
     sal = ""
-    # for linha in range(qtdLinhas):
-    #     for coluna in range(qtdColunas):
-    #         print(matriz[linha][coluna], end=' ')
-    #     print('')
+    if debug:
+        for linha in range(qtdLinhas):
+            for coluna in range(qtdColunas):
+                print(matriz[linha][coluna], end=' ')
+            print('')
 
     for i in range(repeticoes):
         linhaOUcoluna = random.randint(0,1)
@@ -259,7 +264,8 @@ def criptografar_senha(senha, repeticoes):
                 linhaFim = random.randint(0,qtdLinhas-1)
                 if linhaFim != linhaComeco:
                     break
-            # print(f'Linha {linhaComeco} vai pra linha {linhaFim}')
+            if debug:
+                print(f'Linha {linhaComeco} vai pra linha {linhaFim}')
             linha1 = matriz[linhaComeco]
             linha2 = matriz[linhaFim]
             matriz[linhaComeco] = linha2
@@ -272,7 +278,8 @@ def criptografar_senha(senha, repeticoes):
                 if colunaFim != colunaComeco:
                     break
             
-            # print(f'Coluna {colunaComeco} vai para coluna {colunaFim}')
+            if debug:
+                print(f'Coluna {colunaComeco} vai para coluna {colunaFim}')
             listaColunaComeco = []
             listaColunaFim = []
             for linha in range(qtdLinhas): # primeiro guardar os valores pra depois trocar
@@ -287,11 +294,11 @@ def criptografar_senha(senha, repeticoes):
                 matriz[linha][colunaFim] = listaColunaComeco[linha]
             
             sal = str(linhaOUcoluna) + str(colunaFim) + str(colunaComeco) + sal
-
-        # for linha in range(qtdLinhas):
-        #         for coluna in range(qtdColunas):
-        #             print(matriz[linha][coluna], end=' ')
-        #         print('')
+        if debug:
+            for linha in range(qtdLinhas):
+                    for coluna in range(qtdColunas):
+                        print(matriz[linha][coluna], end=' ')
+                    print('')
 
 
         senhaNova = ''
@@ -301,6 +308,9 @@ def criptografar_senha(senha, repeticoes):
                 senhaNova += matriz[linha][coluna] + '¦'
         senhaNova = senhaNova[0:-1]
 
+    if debug:
+        print(f'sal gerado: {sal}\nsenha criptografa: {senhaNova}')
+
     return sal, senhaNova
         
 
@@ -309,7 +319,8 @@ def descriptografar_senha(sal, senhaCriptografada):
     
     qtdLinhas = int(-(-(len(senha)**0.5)//1))
     qtdColunas = int(-(-(len(senha)**0.5)//1))
-    # print(f'linhas: {qtdLinhas}, colunas: {qtdColunas}')
+    if debug:
+        print(f'linhas: {qtdLinhas}, colunas: {qtdColunas}')
 
     matriz = []
     for linha in range(qtdLinhas):
@@ -318,11 +329,11 @@ def descriptografar_senha(sal, senhaCriptografada):
             indiceCaractereAtual = linha*qtdColunas + coluna
             matriz[linha].append(senha[indiceCaractereAtual])
 
-
-    # for linha in range(qtdLinhas):
-    #     for coluna in range(qtdColunas):
-    #         print(matriz[linha][coluna], end=' ')
-    #     print('')
+    if debug:
+        for linha in range(qtdLinhas):
+            for coluna in range(qtdColunas):
+                print(matriz[linha][coluna], end=' ')
+            print('')
     for i in range(int(len(sal)/3)):
 
         linhaOUcoluna = int(sal[i*3])
@@ -332,7 +343,8 @@ def descriptografar_senha(sal, senhaCriptografada):
             linhaFim = int(sal[i*3+2])
 
 
-            # print(f'Linha {linhaComeco} vai pra linha {linhaFim}')
+            if debug:
+                print(f'Linha {linhaComeco} vai pra linha {linhaFim}')
             linha1 = matriz[linhaComeco]
             linha2 = matriz[linhaFim]
             matriz[linhaComeco] = linha2
@@ -341,7 +353,8 @@ def descriptografar_senha(sal, senhaCriptografada):
             colunaComeco = int(sal[i*3+1])
             colunaFim = int(sal[i*3+2])
             
-            # print(f'Coluna {colunaComeco} vai para coluna {colunaFim}')
+            if debug:
+                print(f'Coluna {colunaComeco} vai para coluna {colunaFim}')
             listaColunaComeco = []
             listaColunaFim = []
             for linha in range(qtdLinhas): # primeiro guardar os valores pra depois trocar
@@ -357,18 +370,19 @@ def descriptografar_senha(sal, senhaCriptografada):
                 matriz[linha][colunaFim] = listaColunaComeco[linha]
             
 
-        # for linha in range(qtdLinhas):
-        #         for coluna in range(qtdColunas):
-        #             print(matriz[linha][coluna], end=' ')
-        #         print('')
-
-
         senhaDes = ''
 
         for linha in range(qtdLinhas):
             for coluna in range(qtdColunas):
                 if len(matriz[linha][coluna]) == 1:
                     senhaDes += matriz[linha][coluna]
+
+        if debug:
+            for linha in range(qtdLinhas):
+                    for coluna in range(qtdColunas):
+                        print(matriz[linha][coluna], end=' ')
+                    print('')
+            print('senha descriptografada: '+senhaDes)
 
     return senhaDes
         
@@ -385,11 +399,7 @@ def descriptografar_senha(sal, senhaCriptografada):
 # senha = 123456789
 
 
-
-# sal, senha = criptografar_senha('CatimbalDoParafuso1245@%#%$@$fs', 100)
-
-# print('sSENHA DESCRIPOGROAFADADA:  '+descriptografar_senha(sal, senha))
-# print(f"SENHA CRIPTOGRAFADA: ", senha)
-# print(f'SAL USADO: '+sal)
-
-# quando tem por exemplo, 13 caracteres e a matriz só cobre 12, um fica de fora, fazer com que o alcance 9linahas e colunas cubra até o excedente ---- era só arredondar tudo pra cima
+if debug:
+    senhaTempDEBUG = ''
+    sal, senha = criptografar_senha('CatimbalDoParafuso1245@%#%$@$fs', 100)
+    senhaDes = descriptografar_senha(sal, senha)
