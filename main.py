@@ -651,8 +651,8 @@ def main():
 
                         case '1':
                             total = [] # Percorre os intes de cada serviço no cofre e recolhe apenas as senhas
-                            for senha, dados in cofre.items():
-                                total.append(manipularSenha(dados['senha'], dados['sal']))
+                            for servico, dados in cofre.items():
+                                total.append(manipularSenha('visualizar', dados['senha'], dados['sal']))
 
                             senha_existente = set() # Dando uma pesquisada, descubri que o recurso "set" analisa se há elementos duplicados (conjutos), então ele vê se a senha usada já existe e adiciona no senhas_repetidas que serve meio que um contador de quantas senhas repetidas tem
                             senha_repetida = set()  # Inclusive nos conjuntos se usa add pra adicionar tipo append com lista. Fiquei preso nessa parte pq tava justamente colocando append
@@ -677,13 +677,25 @@ def main():
                             if len(senha_existente) == 0:
                                 print('==========================================================\nNão existem credenciais cadastradas, vá criar suas senhas!\n==========================================================')
                             else:
-                                print(f'Quantidade de credenciais no CofreSeguro: {len(cofre)}\n===========================================')
+                                print(f'Quantidade de credenciais no CofreSeguro: {len(cofre)}')
                                 print(f'Quantidade de senhas fortes: {fortes}')
 
                                 if medias >0:
                                     print(f"{CORES['VERMELHO']}(ALERTA){CORES['RESET']} Quantidade de senhas médias: {medias}")
                                 if len(senha_repetida) >0:
                                     print(f"{CORES['AMARELO']}(ATENÇÃO){CORES['RESET']} Quantidade de senhas repetidas: {len(senha_repetida)}")
+
+                                print(f'\nTempo da criação/última alteração de senha por serviço:')
+                                agora = datetime.now()
+
+                                for servico, dados in cofre.items():
+                                    tempo = agora - datetime.strptime(dados['registro'], "%d/%m/%Y %H:%M:%S")
+                                    dias = tempo.days
+                                    horas = (tempo.seconds // 3600)
+                                    mins = (tempo.seconds % 3600) // 60
+                                    secs = tempo.seconds % 60
+
+                                    print(f"{CORES["NEGRITO"]}{servico}{CORES["RESET"]}: {dias} dias, {horas} horas, {mins} minutos e {secs} segundos atrás.")
 
                             input(f'{CORES["RESET"]}\nPressione Enter para continuar...')
                         case '0':
