@@ -43,5 +43,19 @@ O menu de categorias é mais refinado, contendo menos funções, mas sendo essas
 > * Visualizar todas as categorias registradas;
 > * Renomear uma categoria.
 
+### **Registro de auditoria :**
+
+O registro de auditoria serve para armazenar o tempo e qualquer ocorrência que venha de uma operação feita pelo usuário. O usuário, ao abrir o menu do registro de auditoria pode:
+
+> * Visualizar o registro completo, no qual apresenta as ações feitas até o tempo atual, sem especificar a categoria;
+> * Visualizar o registro por categoria.
+
+
+### **Relatório de segurança :**
+
+O relatório ou registro de segurança tem como função resumir a situação atual do sistema de serviços, contabilizando a quantidade de senhas registradas e de credenciais registradas. Com o relatório de segurança, o usuário pode:
+
+> * Checar o cenário atual, com a quantidade de senhas e credenciais registradas;
+> * Checar a quanto tempo uma certa senha não foi alterada.
 
 
