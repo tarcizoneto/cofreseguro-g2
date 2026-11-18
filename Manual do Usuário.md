@@ -50,9 +50,9 @@ Se a mesma senha aparece em mais de um serviço, o sistema mostra a quantidade e
 Isso importa porque, se um serviço vazar, **todos os outros que compartilham
 a mesma senha ficam vulneráveis**. 
 
-## <span style="color:LightBlue;">Gerador de senhas:</span>
 
-#### O sistema funciona como um gerador aleatório de recomendação para a força de senha com o objetivo de selecionar uma criptografia segura para os diversos tipos de serviços que o usuário quiser inserir suas senhas
+
+# <span style="color:Yellow;">Senhas:</span>
 
   ## 1.1 - Instruções de utilização:
 
@@ -89,7 +89,14 @@ Pelo menos 8 caracteres, conter caracteres maiusculos, minusculos e numeros com 
 Todas as senhas que não seguem as condições acima.
 ## Fraquissima: -->
 Todas as senhas dentro do nosso acervo de senhas comuns e senhas com até 5 caracteres.
-![alt text]({9479618F-2A74-4FAD-BEF9-B1EE094FB886}.png)
+
+*Informação Adicional*: O sistema possuem também uma funcionalidade em que ele gera uma senha criptografada á fim de fornecer mais segurança ao usuário.
+
+## <span style="color:LightBlue;">Gerador de senhas:</span>
+
+####  funciona como um gerador aleatório de recomendação para a força de senha com o objetivo de selecionar uma criptografia segura para os diversos tipos de serviços que o usuário quiser inserir suas senhas
+
+
  ## 1.3 - Consulta de senhas:
   Após inserir a senha no serviço desejado o sistema verificará a senha e irá mostrar o usuário se ele deseja visualizar a senha caso a tenha a esquecido.
 
@@ -100,7 +107,6 @@ Todas as senhas dentro do nosso acervo de senhas comuns e senhas com até 5 cara
 3 - O sistema irá mostrar a senha específica do serviço desejado
 
 
-![alt text]({6703762C-542F-4B73-BA46-EA9E3CB409BA}.png)
 
 ## 1.4 - Alteração de senhas:
 Após a consulta de senhas mostrar os serviços o sistema irá perguntar se deseja atualizar a senha de determinado serviço.
@@ -111,7 +117,7 @@ Após a consulta de senhas mostrar os serviços o sistema irá perguntar se dese
 
 3 - Clique em **Editar** senha.
 
-![alt text]({DB38EC39-B703-4AA7-A9D0-D0555D3E28F4}.png)
+
 ## 1.5 - Apagar senhas:
 
 Após inserir ou alterar determinada senha do serviço escolhido o sistema irá instruir baseado no seu interesse se voce deseja apagar sua senha.
@@ -121,6 +127,7 @@ Após inserir ou alterar determinada senha do serviço escolhido o sistema irá 
 2 - O usuário irá selecionar qual serviço ele deseja apagar.
 
 3 - Clique em **Apagar** senha.
+
 
 ## 1.6 - Listar senhas:
 O sistema agora irá deslocar para a aba de serviços que possuem uma senha e irá mover o usuário para visualizar todas as senhas que os serviços possuem. 
@@ -141,12 +148,36 @@ Da mesma forma que foi feito na instrução anterior o sistema irá direcionar o
 
 3 - O sistema irá mostrar todas as senhas do serviço em específico e todas as outras cadastradas.
 
-## 1.8 Apagar todas as senhas <span style="color:RED;">*USE COM CUIDADO*:</span> 
+## 1.8 Apagar todas as senhas: <span style="color:RED;">*USE COM CUIDADO*:</span> 
 
 1 - Se o usuário deseja apagar as senhas o sistema irá direcionar para remover todas as senhas cadastradas.
 
 2 - O sistema irá perguntar se o usuário deseja mesmo remover todas as senhas perguntando. **SIM/NÃO**
 
 3 - Depois de Clicar **SIM** o sistema irá remover todas as senhas cadastradas.
+
+#  <span span style="color:Grey;">Registro de Auditoria:</span>
+O Registro de Auditória serve como um direcionador de como foi executado cada passo.
+
+## 1.9 Como é sua funcionalidade:
+
+- Como citado em **Funcionamento** os registros de todas as mudanças feitas no cofre são armazenadas em *`log.csv`* onde são mostrados as datas e as horas que foram feitos cada mudanças.
+
+ ##  2.0 Porque isso é importante?
+  - O estado atual revela apenas se algo está funcionando ou quebrado agora, enquanto o histórico revela como o sistema chegou até ali e se há uma ameaça oculta. Olhar apenas para o presente é como ver uma porta trancada e achar que a casa está segura, sem perceber que alguém entrou, pegou o que queria e trancou a porta ao sair.
+
+ ###  2.1 Detecção de ataques silenciosos e persistentes
+
+• Invasões invisíveis: Um invasor habilidoso não quer derrubar o sistema, pois isso chamaria atenção. Ele altera permissões, copia dados e limpa seus rastros para manter o sistema operando normalmente enquanto espiona por meses.
+
+• Comportamento anômalo. O estado atual pode mostrar que um usuário comum está conectado no horário comercial. O histórico, porém, revela que essa mesma conta tentou adivinhar senhas cem vezes durante a madrugada antes de conseguir entrar.
+
+
+  ###  2.2 Responsabilização e conformidade
+
+• Rastreabilidade de ações. Em ambientes corporativos, várias pessoas têm acesso administrativo. O histórico garante que seja possível saber quem alterou uma regra crítica, evitando erros humanos não detectados ou sabotagem interna.
+
+• Exigências legais. Leis de proteção de dados (como a LGPD) e normas de segurança exigem que as empresas comprovem quem acessou informações sensíveis e quando isso ocorreu.
+
 
 
