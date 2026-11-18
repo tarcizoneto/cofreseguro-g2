@@ -70,6 +70,7 @@ a mesma senha ficam vulneráveis**.
 
   ## 1.2 - Adição de senhas:
 O sistema, ao criar uma senha o sistema pede 5 informações principais que são
+
 - **O serviço desejado**
 - **A credencial/Usuário do serviço**
 - **A senha de modo geral**
@@ -88,7 +89,7 @@ Pelo menos 8 caracteres, conter caracteres maiusculos, minusculos e numeros com 
 Todas as senhas que não seguem as condições acima.
 ## Fraquissima: -->
 Todas as senhas dentro do nosso acervo de senhas comuns e senhas com até 5 caracteres.
-
+![alt text]({9479618F-2A74-4FAD-BEF9-B1EE094FB886}.png)
  ## 1.3 - Consulta de senhas:
   Após inserir a senha no serviço desejado o sistema verificará a senha e irá mostrar o usuário se ele deseja visualizar a senha caso a tenha a esquecido.
 
@@ -98,15 +99,19 @@ Todas as senhas dentro do nosso acervo de senhas comuns e senhas com até 5 cara
 
 3 - O sistema irá mostrar a senha específica do serviço desejado
 
+
+![alt text]({6703762C-542F-4B73-BA46-EA9E3CB409BA}.png)
+
 ## 1.4 - Alteração de senhas:
 Após a consulta de senhas mostrar os serviços o sistema irá perguntar se deseja atualizar a senha de determinado serviço.
 
 1 - O sistema vai deslocar para o menu de senhas. 
 
-2 - O sistema vai perguntar se deseja atualizar a senha.
+2 - O sistema vai perguntar se deseja alterar a senha.
 
 3 - Clique em **Editar** senha.
 
+![alt text]({DB38EC39-B703-4AA7-A9D0-D0555D3E28F4}.png)
 ## 1.5 - Apagar senhas:
 
 Após inserir ou alterar determinada senha do serviço escolhido o sistema irá instruir baseado no seu interesse se voce deseja apagar sua senha.
