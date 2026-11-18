@@ -107,10 +107,41 @@ Após a consulta de senhas mostrar os serviços o sistema irá perguntar se dese
 
 3 - Clique em **Editar** senha.
 
+## 1.5 - Apagar senhas:
 
+Após inserir ou alterar determinada senha do serviço escolhido o sistema irá instruir baseado no seu interesse se voce deseja apagar sua senha.
 
+1 - O sistema irá deslocar o usuário para o menu de senhas. 
 
+2 - O usuário irá selecionar qual serviço ele deseja apagar.
 
+3 - Clique em **Apagar** senha.
 
+## 1.6 - Listar senhas:
+O sistema agora irá deslocar para a aba de serviços que possuem uma senha e irá mover o usuário para visualizar todas as senhas que os serviços possuem. 
+
+1 - O sistema ira mover o usuário para um gerenciador de senhas.
+
+2 - O sistema ira mostrar as os serviços e suas determinadas chaves.
+
+3 - O sistema vai mostrar todas as senhas dos serviços que você cadastrou.
+
+## 1.7 Listar senhas por categoria:
+
+Da mesma forma que foi feito na instrução anterior o sistema irá direcionar o usuário para uma lista de senhas pelo serviço desejado.
+
+1 - O sistema ira mover o usuário para um gerenciador de senhas.
+
+2 - O sistema ira mostrar as os serviços e suas determinadas chaves.
+
+3 - O sistema irá mostrar todas as senhas do serviço em específico e todas as outras cadastradas.
+
+## 1.8 Apagar todas as senhas <span style="color:RED;">*USE COM CUIDADO*:</span> 
+
+1 - Se o usuário deseja apagar as senhas o sistema irá direcionar para remover todas as senhas cadastradas.
+
+2 - O sistema irá perguntar se o usuário deseja mesmo remover todas as senhas perguntando. **SIM/NÃO**
+
+3 - Depois de Clicar **SIM** o sistema irá remover todas as senhas cadastradas.
 
 
