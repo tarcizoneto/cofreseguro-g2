@@ -122,7 +122,8 @@ def senha_adicionar(cofre, log):
         
         if fortitude == 'Forte':
             break
-        
+
+    sal, senha = manipularSenha('registrar', senha)
 
     if len(categorias) > 0: # só se pode escolher uma categoria pra senha se existirem categorias, se nao tiver nenhuma por enquanto
             print(f"\nCategorias disponíveis:{CORES['CINZA']}")
@@ -154,7 +155,8 @@ def senha_adicionar(cofre, log):
         observacao = '-'
     cofre[servico] = {
             'credencial': cred,
-            'senha': manipularSenha('registrar', senha),
+            'senha': senha,
+            'sal': sal,
             'categoria': categoriaEscolhida,
             'registro': horario,
             'obs': observacao
@@ -178,7 +180,7 @@ def senha_consultar(cofre, log):
 
     if servico in cofre:
         log = csv.registrarLog(DIRETORIOS['log'], log, 'consultar', servico)
-        print(f"\n{CORES['VERDE']}A credencial do serviço \"{servico}\" é {CORES['NEGRITO']}{cofre[servico]['credencial']}{CORES['RESET']}{CORES['VERDE']}, e sua senha é {CORES['NEGRITO']}{manipularSenha('visualizar', cofre[servico]['senha'])}{CORES['RESET']}.")
+        print(f"\n{CORES['VERDE']}A credencial do serviço \"{servico}\" é {CORES['NEGRITO']}{cofre[servico]['credencial']}{CORES['RESET']}{CORES['VERDE']}, e sua senha é {CORES['NEGRITO']}{manipularSenha('visualizar', cofre[servico]['senha'], cofre[servico]['sal'])}{CORES['RESET']}.")
         
     else:
         print(f"\n{CORES['VERMELHO']}Esse serviço {CORES['NEGRITO']}não está no cofre{CORES['RESET']}{CORES['VERMELHO']}, verifique se você o digitou certo ou se ainda não adicionou-o.")
@@ -248,7 +250,9 @@ def senha_alterar(cofre, log):
         if cred != "":
             cofre[servico]['credencial'] = cred
         if senha != "":
-            cofre[servico]['senha'] = manipularSenha('registrar', senha)
+            sal, senha =  manipularSenha('registrar', senha)
+            cofre[servico]['sal'] = sal
+            cofre[servico]['senha'] = senha
         if categoriaEscolhida != "":
             cofre[servico]['categoria'] = categoriaEscolhida
         if observacao != "":
@@ -334,22 +338,24 @@ def printarCofre(cofre, categoriaAnalisar=None): # criamos essa função pra pri
             for servico, dados in cofre.items():
                 if categorias[categoriaAnalisar] == dados['categoria']: # to percorrendo todas as senhas, se esta estiver com a caegoria que eu pedi, entao printa!
                     printouSenhas = True # no momento em que printar uma senha, a variavel se torna true e lá no final, não precisa mais printar que não existe nenhuma senha
-                    print(f"{servico:>20} {dados['credencial']:>28} {manipularSenha('previa', dados['senha']):>26} {dados['categoria']:>16} {dados['obs']:>40}")
+                    print(f"{servico:>20} {dados['credencial']:>28} {manipularSenha('previa', dados['senha'], dados['sal']):>26} {dados['categoria']:>16} {dados['obs']:>40}")
             if not printouSenhas: # se nao printou nenhuma senha, é porque não tem nenhuma senha com essa categoria.
                 print(f"{CORES['VERMELHO']}Não há senhas salvas com essa categoria.{CORES['VERMELHO']}")
         else: # se não, printa logo tudo mesmo
             for servico, dados in cofre.items():
-                print(f"{servico:>20} {dados['credencial']:>28} {manipularSenha('previa', dados['senha']):>26} {dados['categoria']:>16} {dados['obs']:>40}")
+                print(f"{servico:>20} {dados['credencial']:>28} {manipularSenha('previa', dados['senha'], dados['sal']):>26} {dados['categoria']:>16} {dados['obs']:>40}")
     else:
         print(f"{CORES['VERMELHO']}Não há senhas no cofre!{CORES['RESET']}")
 
-def manipularSenha(acao, senha): # separei em função os atos de visualizar e criar, ja que em tempos futuros iremos fazer alguma criptografia
+def manipularSenha(acao, senha, sal=''): # separei em função os atos de visualizar e criar, ja que em tempos futuros iremos fazer alguma criptografia
     match acao:
         case 'registrar':
-            return senha # aqui vai ter o babado todo de criptografar
+            sal, senha = seguranca.criptografar_senha(senha, 100)
+            return sal, senha
         case 'visualizar':
-            return senha # e aqui vai ter o babado todo de descriptografar
+            return seguranca.descriptografar_senha(sal, senha)
         case 'previa':
+            senha = seguranca.descriptografar_senha(sal, senha)
             previaSenha = ''
             for idxLetra in range(len(senha)):
                 if idxLetra <= 1:
@@ -646,7 +652,7 @@ def main():
                         case '1':
                             total = [] # Percorre os intes de cada serviço no cofre e recolhe apenas as senhas
                             for senha, dados in cofre.items():
-                                total.append(dados['senha'])
+                                total.append(manipularSenha(dados['senha'], dados['sal']))
 
                             senha_existente = set() # Dando uma pesquisada, descubri que o recurso "set" analisa se há elementos duplicados (conjutos), então ele vê se a senha usada já existe e adiciona no senhas_repetidas que serve meio que um contador de quantas senhas repetidas tem
                             senha_repetida = set()  # Inclusive nos conjuntos se usa add pra adicionar tipo append com lista. Fiquei preso nessa parte pq tava justamente colocando append
