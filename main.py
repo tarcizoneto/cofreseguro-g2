@@ -1,7 +1,10 @@
 import os
-from utils import csv
 from datetime import datetime
+
+from utils import csv
 from utils import seguranca
+from utils import agente
+
 
 CORES = {
     "RESET": "\033[0m",
@@ -55,32 +58,6 @@ def limparTerminal(): # a merda do windows quer ser diferentão e usar "cls" pra
 #             if 'categoria' in servico:
 #                 categorias.append(servico['categoria'])
 #     return categorias
-
-
-# ~ tarcizo
-# para deixar documentada a minha indignação e o que eu vou mudar:
-# Carol tinha me dito que é mais intuitivo separar cada ação do crude em funções, só que, o meu raciocínio é que: 
-# pra facilitar a vida da manipulação de variáveis, o mais prático é deixar tudo num escopo de uma função só, e só manipular a variável cofre
-# "por que tem praticidade nisso?" -> vejamos, quando se separa o crude por funções, cada função (adicionar, excluir, alterar), vai mexer diretamente no dicionario cofre
-# e pra se ter esse dicionario em TODAS as funções, vai precisar passar o dicionario como argumento, e depois de mexer no dicionario, vai precisar retornar o dicionario, pra na linha que chamar essa função, atribuir o dicionario alterado no escopo na função main
-# |-> trabalho de corno não só pra fazer, mas pra explicar também
-
-# "e como que você fez então?" --> eu deixei tudo na função main, com o "bloco de código", como carol contestou, e, usando match e os cases, que vê qual ação o usuário quer fazer, e as ações diretamente nos casos
-#                                  dentro de cada caso, já se roda tudo que é preciso fazer, chamando apenas funções que foram criadas para evitar repetições (como salvar o csv, ler o csv, printar as categorias)
-
-# "uai, mas o intuito do projeto é se ter funções..." -> e tem, porém só quando é realmente necessário. 
-# 
-# "tá, mas e se separarmos de todo jeito?" -> no crude, por exemplo, seria mais trabalhoso ainda separar todas as ações em funções,
-#                                             ficaria mais legível? mais ou menos. mas, a que custo? ficaria difícil de entender porque tantos returns e tantas atribuições. 
-# |-> entendam, separar todas as ações em funções pra cada deixaria a forma que Vitor fez o crude em sala muito mais prática: (função adicionar = lê o arquivo, adiciona, salva o arquivo), porque, dentro dessas funções, ele lê o arquivo e trabalha com todas as variáveis necessárias no escopo da função.
-# mas entendam também o problema que existe nessa técnica: funções existem justamente para deixar o MÍNIMO de repetição no código, 
-# é CANSATIVO pro programa e pro código abrir o arquivo toda vez, recriar o dicionario de senhas TODA VEZ pra poder mexer numa mínima coisa?!
-# é mais facil de entender? É!! mas já cabe ao estudante saber e pensar alto: imaginem só, a demora que ia ser pra carregar um arquivo que tem 1000 senhas, e precisar carregar TUDO ISSO só pra REMOVER uma, uuuma ínfima senha...
-# o melhor jeito é: abrir no começo, deixar uma variável global rodando do programa, e não carregar mais csv nenhum, e só salvar o csv quando alterar algo nele.
-
-# como vou fazer, pra ter mais ainda o requisito de "funções": separar com aquele trabalho de corno de atribuir e informar o dicionario toda vez que for alterar numa função, e deixar TODAS as ações separadas... contra minha vontade...
-
-
 
 
 # FUNÇÕES DO MENU SENHA
@@ -450,10 +427,9 @@ def categoria_remover(categorias, cofre):
 
 def reatribuirServicosACategorias(cofre, antigaCategoria, novaCategoria): # vejamos, na hora de apagar a categoria, a gente tira lá da lista de categorias, mas e os serviços que tavam atribuidos a essa categoria, essa função é pra deixar esses serviços em branco
 #                                                                           e melhor ainda, da pra fazer essa função se adaptar pra renomear as categorias, ja que se renomear, precisa reatribuir os bbdos tambem
-    for servico, dados in cofre.items(): # matheuznho, explica a função items p mim, to dementado pra explicar isso eficientemente ~tarcizo
+    for servico, dados in cofre.items():
         if antigaCategoria == dados['categoria']: # to percorrendo todas as senhas, se esta estiver com a caegoria que eu pedi, entao troca rs
             cofre[servico]['categoria'] = novaCategoria
-    #print(f"{CORES['ITALICO']} Senhas reatribu{CORES['ITALICO']}")  precisa mesmo de um print? parei na metade do caminho pq achei desnê
     return cofre
 
 
@@ -478,7 +454,7 @@ def printarLog(log, operacao=None):
             print("O registro de auditoria dessa categoria está vazio.")
 
 def log_buscarOperacao(log):
-    operacaoLog = input(f"Digite a operação para pesquisar nos registros (adicionar/consultar/alterar/apagar), {CORES['ITALICO']}ou deixe em branco para sair{CORES['RESET']}: ")
+    operacaoLog = input(f"Digite a operação para pesquisar nos registros (adicionar/consultar/alterar/apagar/ia), {CORES['ITALICO']}ou deixe em branco para sair{CORES['RESET']}: ")
     if operacaoLog != '':
         print(f'Registros da operação {operacaoLog}: {CORES["CINZA"]}')
         printarLog(log, operacaoLog)
@@ -508,7 +484,7 @@ def main():
         limparTerminal()
         print(f"{CORES['VERDE']}=== CofreSeguro ==={CORES['RESET']}")
 
-        print(f'\n\n{CORES["NEGRITO"]}Menus:{CORES["RESET"]} \n1. Senhas\n2. Categorias\n3. Registro de Auditoria\n4. Relatório de Segurança\n0. Sair')
+        print(f'\n\n{CORES["NEGRITO"]}Menus:{CORES["RESET"]} \n1. Senhas\n2. Categorias\n3. Registro de Auditoria\n4. Relatório de Segurança\n5. Conversar com agente IA\n0. Sair')
         menu = input("Digite o número do menu: ")
         limparTerminal()
         match menu:
@@ -695,13 +671,25 @@ def main():
                                     mins = (tempo.seconds % 3600) // 60
                                     secs = tempo.seconds % 60
 
-                                    print(f"{CORES["NEGRITO"]}{servico}{CORES["RESET"]}: {dias} dias, {horas} horas, {mins} minutos e {secs} segundos atrás.")
+                                    print(f'{CORES["NEGRITO"]}{servico}{CORES["RESET"]}: {dias} dias, {horas} horas, {mins} minutos e {secs} segundos atrás.')
 
                             input(f'{CORES["RESET"]}\nPressione Enter para continuar...')
                         case '0':
                             break
                         case _:
                             input(f"Opção inválida!\nPressione Enter para tentar novamente...")
+            case '5':
+                confirmacaoEntrar = input(f"Seus dados sairão do computador. Continuar? {CORES['ITALICO']}(sim/não){CORES['RESET']}: ").lower()
+                if confirmacaoEntrar == 'sim':
+                    limparTerminal()
+                    print(f"{CORES['ITALICO']}Você está conversando com o {CORES['NEGRITO']}agente IA{CORES['RESET']}{CORES['ITALICO']}, deixe a pergunta em branco pra sair.{CORES['RESET']}")
+                    while True:
+                        pergunta = input("\nPergunta > ").strip()
+                        if pergunta != '':
+                            agente.falar_com_agente(DIRETORIOS['cofre'], DIRETORIOS['log'], pergunta, 'CofreSeguro (grupo 2)')
+                            log = csv.registrarLog(DIRETORIOS['log'], log, 'IA', pergunta)
+                        else:
+                            break
             case '0':
                 print("Fechando cofre...")
                 break

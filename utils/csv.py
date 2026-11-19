@@ -1,11 +1,6 @@
 # biblioteca caseira que vai ter as funções pra criar e alterar os csv desse lindo projeto
 # e também pro main.py não ficar cheio de baboseira num arquivo só
 
-# TO DO!!! adicionar um esquema em que nos csv, se perceba quando tem aspas entre os valores, 
-# porque, quando se tem, é uma "falsa virgula", 
-# isto é, dentro de algum valor, mais provavelmente na observação, tem uma virgula que não determina um novo valor,
-# mas sim, uma virgula usual, como a de gramática
-# é preciso se atentar a isso porque o esquema de ler os csv é justamente dar o split em virgulas
 
 
 
@@ -82,7 +77,7 @@ def carregarCSV(qual, ehLista = False):
         with open(qual, 'r', encoding='UTF-8') as csv:
             csv = csv.read()
             if len(csv) != 0:
-                if csv[-1] == '\n': # se tiver a merda de uma quebra de linha sobrando no csv, essa função quebra e faz tudo se tornar uma lista vazia...
+                if csv[-1] == '\n': # se tiver a merda de uma quebra de linha sobrando no csv, essa função quebra e faz tudo se tornar uma lista vazia... ajeitando isso
                     csv = csv[0:-1]
                 for linha in csv.split('\n'):
 
@@ -195,11 +190,14 @@ def registrarLog(onde, log:list, operacao,oqueMudou):
     # operacao,quando,alteracoes
 
     # Se apagarmos todas as senhas essa vai ser a mensagem
-    if oqueMudou == "Todas as senhas":
-        alteracoes = f"({operacao.upper()}) Todas as senhas foram apagadas."
+    if operacao == 'IA':
+        alteracoes = f"(IA) PROMPT: \"{oqueMudou}\""
     else:
-        # montar a frasezinha: tal coisa foi alterada, por exemplo: (ADICIONAR) A senha do serviço Reddit foi adicionada.'
-        alteracoes = f"({operacao.upper()}) A senha do serviço {oqueMudou} foi {operacao[0:len(operacao)-1]}da."
+        if oqueMudou == "Todas as senhas":
+            alteracoes = f"({operacao.upper()}) Todas as senhas foram apagadas."
+        else:
+            # montar a frasezinha: tal coisa foi alterada, por exemplo: (ADICIONAR) A senha do serviço Reddit foi adicionada.'
+            alteracoes = f"({operacao.upper()}) A senha do serviço {oqueMudou} foi {operacao[0:len(operacao)-1]}da."
 
 
     log.insert(0, {
