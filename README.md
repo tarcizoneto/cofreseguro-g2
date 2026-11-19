@@ -59,3 +59,8 @@ O relatório ou registro de segurança tem como função resumir a situação at
 > * Checar a quanto tempo uma certa senha não foi alterada.
 
 
+### **Interação com a IA :**
+
+A IA implementada no sistema possui a função de auxiliar o usuário em suas dúvidas gerais, respondendo-o de acordo com o que for perguntado em relação ao cofre. Ao selecionar a opção de "conversar com a IA", o usuário confirma o uso dos dados e segue com a pergunta. Com isso, a IA analisa e responde. 
+
+OBS: a IA possui certas restrições que garantem a segurança do usuário, não correspondendo a pedidos que infrinjam a privacidade dos demais registros.
